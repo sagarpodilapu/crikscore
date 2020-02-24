@@ -225,4 +225,5 @@ export const outJson = [
     out: false,
     bowlerWicket: false
   }
+ 
 ];

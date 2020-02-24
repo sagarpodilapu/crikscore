@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^4.2.1",
-    "firebase": "^6.0.3",
+    "firebase": "^7.8.2",
     "jquery": "^3.3.1",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
@@ -16,7 +16,7 @@
     "react-redux": "^5.0.7",
     "react-redux-firebase": "^2.1.6",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "^2.1.5",
+    "react-scripts": "^3.4.0",
     "reactstrap": "^7.1.0",
     "redux": "^4.0.0",
     "redux-firestore": "^0.5.7",

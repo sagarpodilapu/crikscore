@@ -454,6 +454,7 @@ class Console extends Component {
     this.props.updateMatch(match);
     this.props.history.push("/");
   };
+  
 
   lastSixBalls = lastSixBalls =>
     lastSixBalls.length !== 0 &&

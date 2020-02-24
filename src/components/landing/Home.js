@@ -37,7 +37,10 @@ const mapStateToProps = state => {
   };
 };
 
+
 export default compose(
+ 
   connect(mapStateToProps),
-  firestoreConnect([{ collection: "matches", orderBy: ["createdAt", "desc"] }])
+ 
+  firestoreConnect([{ collection: "matches", limit:3 , orderBy: (["createdAt", "desc"]) }])
 )(Home);
