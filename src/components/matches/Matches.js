@@ -8,7 +8,7 @@ import { firestoreConnect } from "react-redux-firebase";
 
 class Matches extends Component {
   render() {
-    const { matches, auth } = this.props;
+    const { matches, auth, user } = this.props;
     return (
       <div className="dashboard container">
         <div className="row">
@@ -22,7 +22,7 @@ class Matches extends Component {
                 New Match
               </a>
             </h1>
-            <LiveMatches matches={matches} auth={auth} />
+            <LiveMatches matches={matches} auth={auth} user={user} />
           </div>
         </div>
       </div>
@@ -30,10 +30,11 @@ class Matches extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     matches: state.firestore.ordered.matches,
-    auth: state.firebase.auth
+    auth: state.firebase.auth,
+    user: state.firebase.profile,
   };
 };
 

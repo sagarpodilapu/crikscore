@@ -22,12 +22,12 @@ class CreateMatch extends Component {
     teamTwo: "Team Two",
     teamOneId: "",
     teamTwoId: "",
-    error: ""
+    error: "",
   };
-  handleChange = e => {
+  handleChange = (e) => {
     this.setState({ [e.target.id]: e.target.value });
   };
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
     console.log(this.state);
     const { teamOne, teamTwo, toss, batting } = this.state;
@@ -110,8 +110,9 @@ class CreateMatch extends Component {
                 </label>
                 <div className="col-sm-8">
                   <Typeahead
+                    id="teamOne"
                     labelKey="name"
-                    onChange={selected => {
+                    onChange={(selected) => {
                       if (selected.length) {
                         let teamOneId;
                         if (has(selected[0], "customOption")) {
@@ -121,7 +122,7 @@ class CreateMatch extends Component {
                         }
                         this.setState({
                           teamOne: startCase(toLower(selected[0].name)),
-                          teamOneId: teamOneId
+                          teamOneId: teamOneId,
                         });
                       }
                     }}
@@ -139,8 +140,9 @@ class CreateMatch extends Component {
                 </label>
                 <div className="col-sm-8">
                   <Typeahead
+                    id="teamTwo"
                     labelKey="name"
-                    onChange={selected => {
+                    onChange={(selected) => {
                       if (selected.length) {
                         let teamTwoId;
                         if (has(selected[0], "customOption")) {
@@ -150,7 +152,7 @@ class CreateMatch extends Component {
                         }
                         this.setState({
                           teamTwo: startCase(toLower(selected[0].name)),
-                          teamTwoId: teamTwoId
+                          teamTwoId: teamTwoId,
                         });
                       }
                     }}
@@ -245,22 +247,19 @@ class CreateMatch extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     auth: state.firebase.auth,
-    teams: state.firestore.ordered.teams
+    teams: state.firestore.ordered.teams,
   };
 };
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    createMatch: match => dispatch(createMatch(match))
+    createMatch: (match) => dispatch(createMatch(match)),
   };
 };
 
 export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  ),
+  connect(mapStateToProps, mapDispatchToProps),
   firestoreConnect([{ collection: "teams" }])
 )(CreateMatch);

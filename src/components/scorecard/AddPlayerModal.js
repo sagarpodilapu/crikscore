@@ -12,7 +12,7 @@ class BatsmanModal extends React.Component {
   state = {
     striker: {},
     nonStriker: {},
-    bowler: {}
+    bowler: {},
   };
 
   render() {
@@ -25,7 +25,7 @@ class BatsmanModal extends React.Component {
       battingTeamId,
       bowlingTeam,
       bowlingTeamId,
-      currentMatch
+      currentMatch,
     } = this.props;
     const { striker, nonStriker, bowler } = this.state;
     return (
@@ -36,7 +36,7 @@ class BatsmanModal extends React.Component {
           </div>
         </ModalHeader>
         <form
-          onSubmit={e => {
+          onSubmit={(e) => {
             submitInitialPlayers(e, striker, nonStriker, bowler);
           }}
           autoComplete="off"
@@ -50,8 +50,9 @@ class BatsmanModal extends React.Component {
               </label>
               <div className="col-sm-10">
                 <Typeahead
+                  id="one"
                   labelKey="name"
-                  onChange={selected => {
+                  onChange={(selected) => {
                     if (selected.length) {
                       let strikerId;
                       if (has(selected[0], "customOption")) {
@@ -72,8 +73,8 @@ class BatsmanModal extends React.Component {
                           dots: 0,
                           fours: 0,
                           sixes: 0,
-                          sr: 0
-                        }
+                          sr: 0,
+                        },
                       });
                     }
                   }}
@@ -90,8 +91,9 @@ class BatsmanModal extends React.Component {
               </label>
               <div className="col-sm-10">
                 <Typeahead
+                  id="two"
                   labelKey="name"
-                  onChange={selected => {
+                  onChange={(selected) => {
                     if (selected.length) {
                       let nonStrikerId;
                       if (has(selected[0], "customOption")) {
@@ -112,8 +114,8 @@ class BatsmanModal extends React.Component {
                           dots: 0,
                           fours: 0,
                           sixes: 0,
-                          sr: 0
-                        }
+                          sr: 0,
+                        },
                       });
                     }
                   }}
@@ -131,8 +133,9 @@ class BatsmanModal extends React.Component {
               </label>
               <div className="col-sm-10">
                 <Typeahead
+                  id="three"
                   labelKey="name"
-                  onChange={selected => {
+                  onChange={(selected) => {
                     if (selected.length) {
                       let bowlerId;
                       if (has(selected[0], "customOption")) {
@@ -157,8 +160,8 @@ class BatsmanModal extends React.Component {
                           byes: 0,
                           fours: 0,
                           sixes: 0,
-                          eco: 0.0
-                        }
+                          eco: 0.0,
+                        },
                       });
                     }
                   }}

@@ -9,7 +9,7 @@ import {
   updateScore,
   addBatsman,
   addPlayers,
-  updateMatch
+  updateMatch,
 } from "../../store/actions/matches";
 import { compose } from "redux";
 import { firestoreConnect } from "react-redux-firebase";
@@ -20,13 +20,15 @@ import {
   calculateSR,
   expectedRuns,
   currentRR,
-  requiredRR
+  requiredRR,
 } from "../../utils";
 import LiveScorecard from "./LiveScorecard";
 import BowlerModal from "./BowlerModal";
 import BatsmanModal from "./BatsmanModal";
 import OutModal from "./OutModal";
 import AddPlayerModal from "./AddPlayerModal";
+
+import { Container, Row } from "reactstrap";
 
 import {
   find,
@@ -36,7 +38,7 @@ import {
   map,
   findIndex,
   replace,
-  isEqual
+  isEqual,
 } from "lodash";
 
 class Console extends Component {
@@ -54,7 +56,7 @@ class Console extends Component {
     battingCollection: "firstInningsBatting",
     bowlingCollection: "firstInningsBowling",
     scoreCollection: "firstInningsScore",
-    error: ""
+    error: "",
   };
 
   componentDidUpdate(prevProps) {
@@ -102,7 +104,7 @@ class Console extends Component {
         battingTeam,
         bowlingTeam,
         battingTeamId,
-        bowlingTeamId
+        bowlingTeamId,
       });
       this.props.getTeamPlayers(bowlingTeamId, "bowling");
       this.props.getTeamPlayers(battingTeamId, "batting");
@@ -111,22 +113,22 @@ class Console extends Component {
       if (score) {
         this.setState({
           bowlerModal: score.overCompleted && isEmpty(score.newBowler),
-          batsmanModal: score.out && isEmpty(score.newBatsman)
+          batsmanModal: score.out && isEmpty(score.newBatsman),
         });
       }
     }
   }
-  handleWhoIsOut = player => {
+  handleWhoIsOut = (player) => {
     if (!isEmpty(player)) this.setState({ whoIsOut: player, outModal: false });
   };
-  handleUIReset = localVariable => {
-    localVariable = map(localVariable, l => {
+  handleUIReset = (localVariable) => {
+    localVariable = map(localVariable, (l) => {
       l.selected = false;
       return l;
     });
     return localVariable;
   };
-  handleRunClick = eachRun => {
+  handleRunClick = (eachRun) => {
     const { ER } = this.state;
     let localEr = this.handleUIReset(ER);
     let localIndex = findIndex(localEr, eachRun);
@@ -134,10 +136,10 @@ class Console extends Component {
     this.setState({
       ER: localEr,
       currentRunJson: eachRun,
-      error: ""
+      error: "",
     });
   };
-  handleExtra = eachExtra => {
+  handleExtra = (eachExtra) => {
     const { EE } = this.state;
     let localEe = this.handleUIReset(EE);
     let localIndex = findIndex(localEe, eachExtra);
@@ -145,10 +147,10 @@ class Console extends Component {
 
     this.setState({
       EE: localEe,
-      currentExtraJson: eachExtra
+      currentExtraJson: eachExtra,
     });
   };
-  handleOut = eachWicket => {
+  handleOut = (eachWicket) => {
     const { WK } = this.state;
     const { striker } = this.props;
     let localWk = this.handleUIReset(WK);
@@ -158,7 +160,7 @@ class Console extends Component {
       WK: localWk,
       outModal: eachWicket.openModal,
       whoIsOut: striker,
-      currentOutJson: eachWicket
+      currentOutJson: eachWicket,
     });
   };
   handleSubmitUI = () => {
@@ -172,7 +174,7 @@ class Console extends Component {
       WK: this.handleUIReset(this.state.WK),
       currentExtraJson: {},
       currentRunJson: {},
-      currentOutJson: {}
+      currentOutJson: {},
     });
   };
   handleScore = () => {
@@ -182,7 +184,7 @@ class Console extends Component {
       currentRunJson,
       currentExtraJson,
       currentOutJson,
-      scoreCollection
+      scoreCollection,
     } = this.state;
     if (isEmpty(currentRunJson)) {
       this.setState({ error: "Select runs first" });
@@ -253,7 +255,7 @@ class Console extends Component {
       }
       lastSixBalls.unshift({
         over: currentOver,
-        event: currentEvent
+        event: currentEvent,
       });
       let totalRuns = score.totalRuns + finalRuns;
       let CRR = currentRR(totalRuns, currentBall);
@@ -290,15 +292,15 @@ class Console extends Component {
       }
       localStriker = {
         ...localStriker,
-        sr: calculateSR(localStriker.runs, localStriker.balls)
+        sr: calculateSR(localStriker.runs, localStriker.balls),
       };
       localBowler = {
         ...localBowler,
-        overs: calculateOvers(localBowler.balls)
+        overs: calculateOvers(localBowler.balls),
       };
       localBowler = {
         ...localBowler,
-        eco: calculateEco(localBowler.runs, localBowler.balls)
+        eco: calculateEco(localBowler.runs, localBowler.balls),
       };
       if (extraType === "wd") {
         localBowler = { ...localBowler, wides: localBowler.wides + 1 };
@@ -314,7 +316,7 @@ class Console extends Component {
           ...localStriker,
           out: true,
           howOut: bowlerWicket ? localBowler.name : "run out",
-          onStrike: false
+          onStrike: false,
         };
       }
       if (out && whoIsOut.id === localNonStriker.id) {
@@ -322,7 +324,7 @@ class Console extends Component {
           ...localNonStriker,
           out: true,
           howOut: "run out",
-          onStrike: false
+          onStrike: false,
         };
       }
       if (currentBall !== 0 && currentBall % 6 === 0 && !extra) {
@@ -355,7 +357,7 @@ class Console extends Component {
         changeStrike: false,
         changeBowler: false,
         endInnings: false,
-        finalRuns
+        finalRuns,
       };
       this.props.addScoreToMatch(payload, scoreCollection);
       this.handleSubmitUI();
@@ -388,14 +390,11 @@ class Console extends Component {
     e.preventDefault();
     const { currentInningsBowling, score } = this.props;
     const { scoreCollection } = this.state;
-    console.log("handleBowlerChange");
-    console.log(currentInningsBowling);
-    console.log(scoreCollection);
     var alreadyExists = find(currentInningsBowling, { id: bowler.id });
     if (alreadyExists === undefined) {
       this.props.addBowler({
         ...bowler,
-        bowlingOrder: currentInningsBowling.length + 1
+        bowlingOrder: currentInningsBowling.length + 1,
       });
     } else {
       this.props.updateScore(
@@ -403,8 +402,8 @@ class Console extends Component {
         scoreCollection
       );
     }
-    this.setState(prevState => ({
-      bowlerModal: !prevState.bowlerModal
+    this.setState((prevState) => ({
+      bowlerModal: !prevState.bowlerModal,
     }));
   };
   handleChangeBatsman = (e, batsman) => {
@@ -415,7 +414,7 @@ class Console extends Component {
     if (alreadyExists === undefined) {
       this.props.addBatsman({
         ...batsman,
-        battingOrder: currentInningsBatting.length + 1
+        battingOrder: currentInningsBatting.length + 1,
       });
     } else {
       this.props.updateScore(
@@ -423,8 +422,8 @@ class Console extends Component {
         scoreCollection
       );
     }
-    this.setState(prevState => ({
-      batsmanModal: !prevState.batsmanModal
+    this.setState((prevState) => ({
+      batsmanModal: !prevState.batsmanModal,
     }));
   };
   handleInitialPlayers = (e, striker, nonStriker, bowler) => {
@@ -438,7 +437,7 @@ class Console extends Component {
       status: 3,
       statusType: "INNINGS_BREAK",
       currentInnings: "SECOND_INNINGS",
-      initialPlayersNeeded: true
+      initialPlayersNeeded: true,
     };
     this.props.updateMatch(match);
     this.props.history.push("/");
@@ -449,14 +448,13 @@ class Console extends Component {
       ...currentMatch[0],
       status: 4,
       statusType: "MATCH_ENDED",
-      currentInnings: "SECOND_INNINGS"
+      currentInnings: "SECOND_INNINGS",
     };
     this.props.updateMatch(match);
     this.props.history.push("/");
   };
-  
 
-  lastSixBalls = lastSixBalls =>
+  lastSixBalls = (lastSixBalls) =>
     lastSixBalls.length !== 0 &&
     lastSixBalls.map((ball, i) => (
       <div key={i} className="col-2 text-center p-1">
@@ -467,18 +465,18 @@ class Console extends Component {
       </div>
     ));
   toggle = () => {
-    this.setState(prevState => ({
-      bowlerModal: !prevState.bowlerModal
+    this.setState((prevState) => ({
+      bowlerModal: !prevState.bowlerModal,
     }));
   };
   toggleOutModal = () => {
-    this.setState(prevState => ({
-      outModal: !prevState.outModal
+    this.setState((prevState) => ({
+      outModal: !prevState.outModal,
     }));
   };
   toggleBatsmanModal = () => {
-    this.setState(prevState => ({
-      batsmanModal: !prevState.batsmanModal
+    this.setState((prevState) => ({
+      batsmanModal: !prevState.batsmanModal,
     }));
   };
 
@@ -493,7 +491,7 @@ class Console extends Component {
       battingSquad,
       auth,
       currentInningsBatting,
-      currentInningsBowling
+      currentInningsBowling,
     } = this.props;
     const {
       bowlerModal,
@@ -506,7 +504,7 @@ class Console extends Component {
       battingTeamId,
       bowlingTeam,
       bowlingTeamId,
-      error
+      error,
     } = this.state;
     if (!auth.uid) {
       return <Redirect to="/signIn" />;
@@ -515,227 +513,235 @@ class Console extends Component {
     if (currentMatch) {
       if (!currentMatch[0].initialPlayersNeeded && score) {
         return (
-          <div className="my-2">
-            {/* heading */}
-            <div className="m-3 border-bottom border-primary pb-3 score-label">
-              {currentMatch[0].teamOne} vs {currentMatch[0].teamTwo} at{" "}
-              {currentMatch[0].venue}
-              <span className="float-right text-danger score-values">
-                {currentMatch[0].currentInnings === "FIRST_INNINGS"
-                  ? "1st"
-                  : "2nd"}{" "}
-                Inn
-              </span>
-            </div>
-            {/* top panel */}
-            <div className="container">
-              <div className="row text-center px-4">
-                <div className="col-3 bg-danger text-white p-1">
-                  <div className="score-label text-uppercase">score</div>
-                  <div className="score-values">
-                    {score.totalRuns}/{score.totalWickets}
+          <Container>
+            <Row>
+              <div className="my-2">
+                {/* heading */}
+                <div className="m-3 border-bottom border-primary pb-3 score-label">
+                  {currentMatch[0].teamOne} vs {currentMatch[0].teamTwo} at{" "}
+                  {currentMatch[0].venue}
+                  <span className="float-right text-danger score-values">
+                    {currentMatch[0].currentInnings === "FIRST_INNINGS"
+                      ? "1st"
+                      : "2nd"}{" "}
+                    Inn
+                  </span>
+                </div>
+                {/* top panel */}
+                <div className="container">
+                  <div className="row text-center px-4">
+                    <div className="col-3 bg-danger text-white p-1">
+                      <div className="score-label text-uppercase">score</div>
+                      <div className="score-values">
+                        {score.totalRuns}/{score.totalWickets}
+                      </div>
+                    </div>
+                    <div className="col-6 p-1 bg-light">
+                      <div className="score-label text-uppercase">crr</div>
+                      <div className="score-values">{score.CRR}</div>
+                    </div>
+                    <div className="col-3 bg-danger text-white p-1">
+                      <div className="score-label text-uppercase">overs</div>
+                      <div className="score-values">
+                        {score.currentOver}/{currentMatch[0].overs}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row my-1 px-4">
+                    <div className="col bg-light">
+                      <div className="row">
+                        <div className="col-2 text-uppercase p-1">
+                          <img
+                            src={
+                              "https://static.thenounproject.com/png/635343-200.png"
+                            }
+                            alt="Bat"
+                            className="img-fluid"
+                          />
+                        </div>
+                        <div className="col-10 text-capitalize text-truncate border-right p-1">
+                          {striker && striker.name}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col">
+                      <div className="row bg-light">
+                        <div className="col-10 text-capitalize text-truncate p-1">
+                          {bowler && bowler.name}
+                        </div>
+                        <div className="col-2 text-uppercase p-1">
+                          <img
+                            src={
+                              "https://static.thenounproject.com/png/866374-200.png"
+                            }
+                            alt="Bat"
+                            className="img-fluid"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row my-1 py-1 px-4">
+                    {this.lastSixBalls(score.lastSixBalls)}
                   </div>
                 </div>
-                <div className="col-6 p-1 bg-light">
-                  <div className="score-label text-uppercase">crr</div>
-                  <div className="score-values">{score.CRR}</div>
-                </div>
-                <div className="col-3 bg-danger text-white p-1">
-                  <div className="score-label text-uppercase">overs</div>
-                  <div className="score-values">
-                    {score.currentOver}/{currentMatch[0].overs}
-                  </div>
-                </div>
-              </div>
-              <div className="row my-1 px-4">
-                <div className="col bg-light">
+                {/* runs panel */}
+                <div className="bg-light text-dark p-3">
                   <div className="row">
-                    <div className="col-2 text-uppercase p-1">
-                      <img
-                        src={
-                          "https://static.thenounproject.com/png/635343-200.png"
-                        }
-                        alt="Bat"
-                        className="img-fluid"
-                      />
+                    <div className="score-label text-center text-uppercase col-12 mb-2">
+                      runs
                     </div>
-                    <div className="col-10 text-capitalize text-truncate border-right p-1">
-                      {striker && striker.name}
+                    <div className="text-center col-12">
+                      {ER.map((eachRun, index) => (
+                        <span
+                          key={index}
+                          onClick={() => {
+                            this.handleRunClick(eachRun);
+                          }}
+                          id={eachRun.id}
+                          className={
+                            eachRun.selected
+                              ? eachRun.selectedStyle
+                              : eachRun.style
+                          }
+                        >
+                          {eachRun.run}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  {error && <div className="error">{error}</div>}
+                  <hr />
+                  <div className="row text-center">
+                    <div className="col">
+                      <h3 className="score-label">extra</h3>
+
+                      {EE.map((eachExtra, index) => (
+                        <div
+                          key={index}
+                          onClick={() => {
+                            this.handleExtra(eachExtra);
+                          }}
+                          id={eachExtra.id}
+                          className={
+                            eachExtra.selected
+                              ? eachExtra.selectedStyle
+                              : eachExtra.style
+                          }
+                        >
+                          {eachExtra.type}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="col">
+                      <h3 className="score-label">wicket</h3>
+
+                      {WK.map((eachOut, index) => (
+                        <div
+                          key={index}
+                          onClick={() => {
+                            this.handleOut(eachOut);
+                          }}
+                          id={eachOut.id}
+                          className={
+                            eachOut.selected
+                              ? eachOut.selectedStyle
+                              : eachOut.style
+                          }
+                        >
+                          {eachOut.type}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
-                <div className="col">
-                  <div className="row bg-light">
-                    <div className="col-10 text-capitalize text-truncate p-1">
-                      {bowler && bowler.name}
+                {/* score submit */}
+                <div className="container mt-2">
+                  <button
+                    onClick={this.handleScore}
+                    className="btn btn-block btn-success text-uppercase"
+                  >
+                    Submit
+                  </button>
+                </div>
+                {/* change player panel */}
+                <div className="container my-2">
+                  <div className="row">
+                    <div className="col">
+                      <button
+                        onClick={this.handleStrike}
+                        className="btn btn-success text-uppercase"
+                      >
+                        Change strike
+                      </button>
                     </div>
-                    <div className="col-2 text-uppercase p-1">
-                      <img
-                        src={
-                          "https://static.thenounproject.com/png/866374-200.png"
-                        }
-                        alt="Bat"
-                        className="img-fluid"
-                      />
+                    <div className="col">
+                      <button
+                        onClick={this.handleBowler}
+                        className="btn btn-warning text-uppercase"
+                      >
+                        Change bowler
+                      </button>
+                    </div>
+                    <div className="col">
+                      {currentMatch[0].currentInnings === "FIRST_INNINGS" && (
+                        <button
+                          onClick={this.handleInnings}
+                          className="btn btn-danger text-uppercase"
+                        >
+                          end innings
+                        </button>
+                      )}
+                      {currentMatch[0].currentInnings === "SECOND_INNINGS" && (
+                        <button
+                          onClick={this.handleEndMatch}
+                          className="btn btn-danger text-uppercase"
+                        >
+                          end match
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
+                {/* live scorecard */}
+                <LiveScorecard
+                  striker={striker}
+                  nonStriker={nonStriker}
+                  bowler={bowler}
+                />
+                {/* Full scoredard */}
+                <Link
+                  to={`/match/${currentMatch[0].id}/scorecard`}
+                  className="btn btn-info btn-block"
+                  target="_blank"
+                >
+                  Full Scorecard
+                </Link>
+                {/* modals */}
+                <BowlerModal
+                  openModal={bowlerModal}
+                  submitBowler={this.handleChangeBowler}
+                  bowlingSquad={bowlingSquad}
+                  bowlingTeam={bowlingTeam}
+                  bowlingTeamId={bowlingTeamId}
+                />
+                <OutModal
+                  openModal={outModal}
+                  toggle={this.toggleOutModal}
+                  striker={striker}
+                  nonStriker={nonStriker}
+                  handleWhoIsOut={this.handleWhoIsOut}
+                />
+                <BatsmanModal
+                  openModal={batsmanModal}
+                  submitBatsman={this.handleChangeBatsman}
+                  battingSquad={battingSquad}
+                  battingTeam={battingTeam}
+                  battingTeamId={battingTeamId}
+                />
               </div>
-              <div className="row my-1 py-1 px-4">
-                {this.lastSixBalls(score.lastSixBalls)}
-              </div>
-            </div>
-            {/* runs panel */}
-            <div className="bg-light text-dark p-3">
-              <div className="row">
-                <div className="score-label text-center text-uppercase col-12 mb-2">
-                  runs
-                </div>
-                <div className="text-center col-12">
-                  {ER.map((eachRun, index) => (
-                    <span
-                      key={index}
-                      onClick={() => {
-                        this.handleRunClick(eachRun);
-                      }}
-                      id={eachRun.id}
-                      className={
-                        eachRun.selected ? eachRun.selectedStyle : eachRun.style
-                      }
-                    >
-                      {eachRun.run}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              {error && <div className="error">{error}</div>}
-              <hr />
-              <div className="row text-center">
-                <div className="col">
-                  <h3 className="score-label">extra</h3>
-
-                  {EE.map((eachExtra, index) => (
-                    <div
-                      key={index}
-                      onClick={() => {
-                        this.handleExtra(eachExtra);
-                      }}
-                      id={eachExtra.id}
-                      className={
-                        eachExtra.selected
-                          ? eachExtra.selectedStyle
-                          : eachExtra.style
-                      }
-                    >
-                      {eachExtra.type}
-                    </div>
-                  ))}
-                </div>
-                <div className="col">
-                  <h3 className="score-label">wicket</h3>
-
-                  {WK.map((eachOut, index) => (
-                    <div
-                      key={index}
-                      onClick={() => {
-                        this.handleOut(eachOut);
-                      }}
-                      id={eachOut.id}
-                      className={
-                        eachOut.selected ? eachOut.selectedStyle : eachOut.style
-                      }
-                    >
-                      {eachOut.type}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            {/* score submit */}
-            <div className="container mt-2">
-              <button
-                onClick={this.handleScore}
-                className="btn btn-block btn-success text-uppercase"
-              >
-                Submit
-              </button>
-            </div>
-            {/* change player panel */}
-            <div className="container my-2">
-              <div className="row">
-                <div className="col">
-                  <button
-                    onClick={this.handleStrike}
-                    className="btn btn-success text-uppercase"
-                  >
-                    Change strike
-                  </button>
-                </div>
-                <div className="col">
-                  <button
-                    onClick={this.handleBowler}
-                    className="btn btn-warning text-uppercase"
-                  >
-                    Change bowler
-                  </button>
-                </div>
-                <div className="col">
-                  {currentMatch[0].currentInnings === "FIRST_INNINGS" && (
-                    <button
-                      onClick={this.handleInnings}
-                      className="btn btn-danger text-uppercase"
-                    >
-                      end innings
-                    </button>
-                  )}
-                  {currentMatch[0].currentInnings === "SECOND_INNINGS" && (
-                    <button
-                      onClick={this.handleEndMatch}
-                      className="btn btn-danger text-uppercase"
-                    >
-                      end match
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-            {/* live scorecard */}
-            <LiveScorecard
-              striker={striker}
-              nonStriker={nonStriker}
-              bowler={bowler}
-            />
-            {/* Full scoredard */}
-            <Link
-              to={`/match/${currentMatch[0].id}/scorecard`}
-              className="btn btn-info btn-block"
-              target="_blank"
-            >
-              Full Scorecard
-            </Link>
-            {/* modals */}
-            <BowlerModal
-              openModal={bowlerModal}
-              submitBowler={this.handleChangeBowler}
-              bowlingSquad={bowlingSquad}
-              bowlingTeam={bowlingTeam}
-              bowlingTeamId={bowlingTeamId}
-            />
-            <OutModal
-              openModal={outModal}
-              toggle={this.toggleOutModal}
-              striker={striker}
-              nonStriker={nonStriker}
-              handleWhoIsOut={this.handleWhoIsOut}
-            />
-            <BatsmanModal
-              openModal={batsmanModal}
-              submitBatsman={this.handleChangeBatsman}
-              battingSquad={battingSquad}
-              battingTeam={battingTeam}
-              battingTeamId={battingTeamId}
-            />
-          </div>
+            </Row>
+          </Container>
         );
       } else {
         return (
@@ -762,7 +768,7 @@ class Console extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   let striker = {};
   let bowler = {};
   let nonStriker = {};
@@ -827,57 +833,54 @@ const mapStateToProps = state => {
     bowlingSquad: state.matches.bowlingSquad,
     battingSquad: state.matches.battingSquad,
     currentInningsBatting: currentInningsBatting,
-    currentInningsBowling: currentInningsBowling
+    currentInningsBowling: currentInningsBowling,
   };
 };
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     addScoreToMatch: (score, whichCollection) =>
       dispatch(addScoreToMatch(score, whichCollection)),
     getTeamPlayers: (teamId, teamAction) =>
       dispatch(getTeamPlayers(teamId, teamAction)),
-    addBowler: bowler => dispatch(addBowler(bowler)),
-    addBatsman: batsman => dispatch(addBatsman(batsman)),
+    addBowler: (bowler) => dispatch(addBowler(bowler)),
+    addBatsman: (batsman) => dispatch(addBatsman(batsman)),
     updateScore: (score, whichCollection) =>
       dispatch(updateScore(score, whichCollection)),
     addPlayers: (striker, nonStriker, bowler) =>
       dispatch(addPlayers(striker, nonStriker, bowler)),
 
-    updateMatch: payload => dispatch(updateMatch(payload))
+    updateMatch: (payload) => dispatch(updateMatch(payload)),
   };
 };
 
 export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  ),
-  firestoreConnect(props => [
+  connect(mapStateToProps, mapDispatchToProps),
+  firestoreConnect((props) => [
     { collection: "matches", doc: props.match.params.matchId },
     { collection: "teams" },
     {
       collection: "matches",
       doc: props.match.params.matchId,
       subcollections: [{ collection: "firstInningsBatting" }],
-      storeAs: "firstInningsBatting"
+      storeAs: "firstInningsBatting",
     },
     {
       collection: "matches",
       doc: props.match.params.matchId,
       subcollections: [{ collection: "firstInningsBowling" }],
-      storeAs: "firstInningsBowling"
+      storeAs: "firstInningsBowling",
     },
     {
       collection: "matches",
       doc: props.match.params.matchId,
       subcollections: [{ collection: "secondInningsBatting" }],
-      storeAs: "secondInningsBatting"
+      storeAs: "secondInningsBatting",
     },
     {
       collection: "matches",
       doc: props.match.params.matchId,
       subcollections: [{ collection: "secondInningsBowling" }],
-      storeAs: "secondInningsBowling"
+      storeAs: "secondInningsBowling",
     },
     {
       collection: "matches",
@@ -886,10 +889,10 @@ export default compose(
         {
           collection: "firstInningsScore",
           orderBy: ["createdAt", "desc"],
-          limit: 1
-        }
+          limit: 1,
+        },
       ],
-      storeAs: "firstInningsScore"
+      storeAs: "firstInningsScore",
     },
     {
       collection: "matches",
@@ -898,10 +901,10 @@ export default compose(
         {
           collection: "secondInningsScore",
           orderBy: ["createdAt", "desc"],
-          limit: 1
-        }
+          limit: 1,
+        },
       ],
-      storeAs: "secondInningsScore"
-    }
+      storeAs: "secondInningsScore",
+    },
   ])
 )(Console);

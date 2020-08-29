@@ -10,23 +10,26 @@ import {
   FormGroup,
   Label,
   Input,
-  FormText
+  FormText,
+  FormFeedback,
 } from "reactstrap";
 
 class Signin extends Component {
   state = {
     email: "",
-    password: ""
+    password: "",
   };
-  handleChange = e => {
+  handleChange = (e) => {
     this.setState({ [e.target.id]: e.target.value });
   };
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
     this.props.signIn(this.state);
   };
   render() {
     const { auth, signInError } = this.props;
+    console.log(signInError);
+    const signInErrorFlag = signInError !== "";
     if (auth.uid) {
       return <Redirect to="/" />;
     }
@@ -35,7 +38,6 @@ class Signin extends Component {
         <Form onSubmit={this.handleSubmit}>
           <h5 className="border-bottom pb-2">Login</h5>
           <FormGroup row>
-            {signInError && <div class="error">{signInError}</div>}
             <Label for="email" sm={2}>
               Email
             </Label>
@@ -46,7 +48,9 @@ class Signin extends Component {
                 id="email"
                 placeholder="Enter Email"
                 onChange={this.handleChange}
+                invalid={signInErrorFlag}
               />
+              <FormFeedback>{signInError}</FormFeedback>
             </Col>
           </FormGroup>
           <FormGroup row>
@@ -74,19 +78,16 @@ class Signin extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     auth: state.firebase.auth,
-    signInError: state.auth.signInError
+    signInError: state.auth.signInError,
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    signIn: credentials => dispatch(signIn(credentials))
+    signIn: (credentials) => dispatch(signIn(credentials)),
   };
 };
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Signin);
+export default connect(mapStateToProps, mapDispatchToProps)(Signin);

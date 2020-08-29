@@ -10,7 +10,7 @@ class BatsmanModal extends React.Component {
     super(props);
   }
   state = {
-    batsman: {}
+    batsman: {},
   };
 
   render() {
@@ -20,14 +20,14 @@ class BatsmanModal extends React.Component {
       submitBatsman,
       battingSquad,
       battingTeam,
-      battingTeamId
+      battingTeamId,
     } = this.props;
     const { batsman } = this.state;
     return (
       <Modal isOpen={openModal} className={this.props.className}>
         <ModalHeader>Change Batsman</ModalHeader>
         <form
-          onSubmit={e => {
+          onSubmit={(e) => {
             submitBatsman(e, this.state.batsman);
           }}
           autoComplete="off"
@@ -41,8 +41,9 @@ class BatsmanModal extends React.Component {
               </label>
               <div className="col-sm-10">
                 <Typeahead
+                  id="one"
                   labelKey="name"
-                  onChange={selected => {
+                  onChange={(selected) => {
                     if (selected.length) {
                       let batsmanId;
                       if (has(selected[0], "customOption")) {
@@ -67,8 +68,8 @@ class BatsmanModal extends React.Component {
                           byes: 0,
                           fours: 0,
                           sixes: 0,
-                          eco: 0
-                        }
+                          eco: 0,
+                        },
                       });
                     }
                   }}

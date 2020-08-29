@@ -10,7 +10,7 @@ class BowlerModal extends React.Component {
     super(props);
   }
   state = {
-    bowler: {}
+    bowler: {},
   };
 
   render() {
@@ -20,14 +20,14 @@ class BowlerModal extends React.Component {
       submitBowler,
       bowlingSquad,
       bowlingTeam,
-      bowlingTeamId
+      bowlingTeamId,
     } = this.props;
     const { bowler } = this.state;
     return (
       <Modal isOpen={openModal} className={this.props.className}>
         <ModalHeader>Change Bowler</ModalHeader>
         <form
-          onSubmit={e => {
+          onSubmit={(e) => {
             submitBowler(e, this.state.bowler);
           }}
           autoComplete="off"
@@ -41,8 +41,9 @@ class BowlerModal extends React.Component {
               </label>
               <div className="col-sm-10">
                 <Typeahead
+                  id="one"
                   labelKey="name"
-                  onChange={selected => {
+                  onChange={(selected) => {
                     if (selected.length) {
                       let bowlerId;
                       if (has(selected[0], "customOption")) {
@@ -67,8 +68,8 @@ class BowlerModal extends React.Component {
                           byes: 0,
                           fours: 0,
                           sixes: 0,
-                          eco: 0
-                        }
+                          eco: 0,
+                        },
                       });
                     }
                   }}
@@ -82,6 +83,9 @@ class BowlerModal extends React.Component {
             </div>
           </ModalBody>
           <ModalFooter>
+            <Button color="secondary" onClick={toggle}>
+              Cancel
+            </Button>
             <Button color="primary" disabled={isEmpty(bowler)}>
               Change Bowler
             </Button>{" "}
