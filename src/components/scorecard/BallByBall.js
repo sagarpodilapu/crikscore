@@ -1,7 +1,9 @@
 import React from "react";
 import { ListGroup, Table } from "reactstrap";
+import moment from "moment";
 
 const BallByBall = ({ match, firstInningsScore, secondInningsScore }) => {
+  console.log(firstInningsScore);
   return (
     <Table size="sm" borderless>
       <thead>

@@ -112,7 +112,9 @@ class Console extends Component {
         battingTeamId,
         bowlingTeamId,
       });
+      //8 - update
       this.props.getTeamPlayers(bowlingTeamId, "bowling");
+      //9 - update
       this.props.getTeamPlayers(battingTeamId, "batting");
     }
     if (score !== prevProps.score) {
@@ -286,6 +288,10 @@ class Console extends Component {
           localBowler = { ...localBowler, sixes: localBowler.sixes + 1 };
           boundary = true;
         }
+        if (runs % 2 === 1) {
+          localStriker = { ...localStriker, onStrike: false };
+          localNonStriker = { ...localNonStriker, onStrike: true };
+        }
       }
       if (bowlerBall) {
         localBowler = { ...localBowler, balls: localBowler.balls + 1 };
@@ -365,6 +371,7 @@ class Console extends Component {
         endInnings: false,
         finalRuns,
       };
+      //10 - update
       this.props.addScoreToMatch(payload, scoreCollection);
       this.handleSubmitUI();
       if (
@@ -387,6 +394,8 @@ class Console extends Component {
     const { score } = this.props;
     const { scoreCollection } = this.state;
     let localScore = { ...score, changeStrike: true };
+    //11 - update
+    console.log("strike changed");
     this.props.updateScore(localScore, scoreCollection);
   };
   handleBowler = () => {
@@ -398,11 +407,14 @@ class Console extends Component {
     const { scoreCollection } = this.state;
     var alreadyExists = find(currentInningsBowling, { id: bowler.id });
     if (alreadyExists === undefined) {
+      //1 - update
       this.props.addBowler({
         ...bowler,
         bowlingOrder: currentInningsBowling.length + 1,
       });
     } else {
+      //2 - update
+      console.log("bowler changed");
       this.props.updateScore(
         { ...score, newBowler: alreadyExists },
         scoreCollection
@@ -418,11 +430,14 @@ class Console extends Component {
     const { scoreCollection } = this.state;
     var alreadyExists = find(currentInningsBatting, { id: batsman.id });
     if (alreadyExists === undefined) {
+      //3 - update
       this.props.addBatsman({
         ...batsman,
         battingOrder: currentInningsBatting.length + 1,
       });
     } else {
+      //4 - update
+      console.log("batsmen changed");
       this.props.updateScore(
         { ...score, newBatsman: alreadyExists },
         scoreCollection
@@ -434,6 +449,7 @@ class Console extends Component {
   };
   handleInitialPlayers = (e, striker, nonStriker, bowler) => {
     e.preventDefault();
+    //5 - update
     this.props.addPlayers(striker, nonStriker, bowler);
   };
   handleInnings = () => {
@@ -445,6 +461,7 @@ class Console extends Component {
       currentInnings: "SECOND_INNINGS",
       initialPlayersNeeded: true,
     };
+    //6 - update
     this.props.updateMatch(match);
     this.props.history.push("/");
   };
@@ -482,6 +499,7 @@ class Console extends Component {
       winner,
       winnerInformation,
     };
+    //7 - update
     this.props.updateMatch(match);
     this.props.history.push("/");
   };
@@ -522,8 +540,6 @@ class Console extends Component {
       bowlingSquad,
       battingSquad,
       auth,
-      currentInningsBatting,
-      currentInningsBowling,
     } = this.props;
     const {
       bowlerModal,
