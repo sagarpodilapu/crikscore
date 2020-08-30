@@ -13,20 +13,20 @@ class AddPlayers extends Component {
     toss: "",
     batting: "",
     teamOne: "Team One",
-    teamTwo: "Team Two"
+    teamTwo: "Team Two",
   };
-  handleChange = e => {
+  handleChange = (e) => {
     this.setState({ [e.target.id]: e.target.value });
   };
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
-    
+
     this.props.addPlayers(this.state);
     this.props.history.push("/");
   };
   render() {
     const { teamOne, teamTwo } = this.state;
-    const { auth, match } = this.props;
+    const { auth, match, currentMatch } = this.props;
     if (!auth.uid) {
       return <Redirect to="/signIn" />;
     }
@@ -75,20 +75,17 @@ class AddPlayers extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  
+const mapStateToProps = (state) => {
   return {
     auth: state.firebase.auth,
-    match: state.matches.currentMatch
+    match: state.matches.currentMatch,
+    currentMatch: state.firestore.ordered.matches,
   };
 };
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    addPlayers: match => dispatch(addPlayers(match))
+    addPlayers: (match) => dispatch(addPlayers(match)),
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(AddPlayers);
+export default connect(mapStateToProps, mapDispatchToProps)(AddPlayers);

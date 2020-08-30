@@ -23,7 +23,7 @@ class App extends Component {
             <Route path="/signup" component={SignUp} />
             <Route path="/newMatch" component={NewMatch} />
             <Route path="/matches" component={Matches} />
-            <Route path="/addPlayers" component={AddPlayers} />
+            <Route path="/match/:matchId/addPlayers" component={AddPlayers} />
             <Route path="/match/:matchId/scorecard" component={FullScorecard} />
             <Route path="/match/:matchId/score" component={Console} />
           </Switch>

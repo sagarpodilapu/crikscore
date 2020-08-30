@@ -5,7 +5,6 @@ import firebase from "firebase";
 
 const MatchSummary = ({ match, auth, user }) => {
   let url = `/match/${match.id}/score`;
-  console.log(user);
   const removeMatch = (matchId) => {};
 
   const enableActions = auth.uid === match.scorerId;
@@ -21,6 +20,7 @@ const MatchSummary = ({ match, auth, user }) => {
   } else if (match.statusType === "INNINGS_BREAK") {
     matchStatusTypeClass = "badge-info";
     matchStatusType = "Break";
+    showMatchLink = false;
   } else {
     showMatchLink = false;
     matchStatusType = "Toss";
@@ -93,6 +93,14 @@ const MatchSummary = ({ match, auth, user }) => {
         </div>
       </div>
       <div className="card-footer">
+        {/* {!showMatchLink && (
+          <Link
+            to={`/match/${match.id}/addPlayers`}
+            className="float-left btn btn-dark btn-sm"
+          >
+            Add Players
+          </Link>
+        )} */}
         {showMatchLink && (
           <Link
             to={`/match/${match.id}/scorecard`}

@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
-import { Redirect } from "react-router-dom";
 import { firestoreConnect } from "react-redux-firebase";
 import moment from "moment";
 import { find, floor, isEmpty, round, map, findIndex } from "lodash";
@@ -24,20 +23,20 @@ import {
   CardTitle,
   CardText,
   Row,
-  Col
+  Col,
 } from "reactstrap";
 import classnames from "classnames";
 
 class FullScorecard extends Component {
   state = {
-    activeTab: "1"
+    activeTab: "1",
   };
   componentWillMount() {}
   componentDidMount() {}
-  toggle = tab => {
+  toggle = (tab) => {
     if (this.state.activeTab !== tab) {
       this.setState({
-        activeTab: tab
+        activeTab: tab,
       });
     }
   };
@@ -52,7 +51,9 @@ class FullScorecard extends Component {
       secondInningsBatting,
       firstInningsBowling,
       secondInningsBowling,
-      scores
+      scores,
+      firstInningsScore,
+      secondInningsScore,
     } = this.props;
     if (currentMatch) {
       return (
@@ -112,11 +113,7 @@ class FullScorecard extends Component {
               </h3>
               <InningsBatting
                 players={firstInningsBatting}
-                finalScore={`${currentMatch[0].firstInningsRuns}/${
-                  currentMatch[0].firstInningsWickets
-                }(${currentMatch[0].firstInningsOvers}/${
-                  currentMatch[0].overs
-                }, RR: 3.55)`}
+                finalScore={`${currentMatch[0].firstInningsRuns}/${currentMatch[0].firstInningsWickets}(${currentMatch[0].firstInningsOvers}/${currentMatch[0].overs}, RR: 3.55)`}
               />
               <InningsBowling players={firstInningsBowling} />
 
@@ -128,11 +125,7 @@ class FullScorecard extends Component {
                   </h3>
                   <InningsBatting
                     players={secondInningsBatting}
-                    finalScore={`${currentMatch[0].secondInningsRuns}/${
-                      currentMatch[0].secondInningsWickets
-                    }(${currentMatch[0].secondInningsOvers}/${
-                      currentMatch[0].overs
-                    }, RR: 3.55)`}
+                    finalScore={`${currentMatch[0].secondInningsRuns}/${currentMatch[0].secondInningsWickets}(${currentMatch[0].secondInningsOvers}/${currentMatch[0].overs}, RR: 3.55)`}
                   />
                   <InningsBowling players={secondInningsBowling} />
                 </div>
@@ -148,7 +141,11 @@ class FullScorecard extends Component {
               />
             </TabPane>
             <TabPane tabId="3">
-              <BallByBall scores={scores} />
+              <BallByBall
+                firstInningsScore={firstInningsScore}
+                secondInningsScore={secondInningsScore}
+                match={currentMatch}
+              />
             </TabPane>
             <TabPane tabId="4">
               <Row>
@@ -194,11 +191,13 @@ const mapStateToProps = (state, ownProps) => {
   let currentMatch = state.firestore.ordered.matches;
   let scores;
   let score;
+  let fScore = state.firestore.ordered.firstInningsScore;
+  let sScore = state.firestore.ordered.secondInningsScore;
   if (currentMatch) {
     if (currentMatch[0].currentInnings === "FIRST_INNINGS") {
-      scores = state.firestore.ordered.firstInningsScore;
+      scores = fScore;
     } else {
-      scores = state.firestore.ordered.secondInningsScore;
+      scores = sScore;
     }
     if (scores) {
       score = scores[0];
@@ -221,12 +220,14 @@ const mapStateToProps = (state, ownProps) => {
     firstInningsBatting: state.firestore.ordered.firstInningsBatting,
     secondInningsBatting: state.firestore.ordered.secondInningsBatting,
     firstInningsBowling: state.firestore.ordered.firstInningsBowling,
-    secondInningsBowling: state.firestore.ordered.secondInningsBowling
+    secondInningsBowling: state.firestore.ordered.secondInningsBowling,
+    firstInningsScore: fScore,
+    secondInningsScore: sScore,
   };
 };
 export default compose(
   connect(mapStateToProps),
-  firestoreConnect(props => [
+  firestoreConnect((props) => [
     { collection: "matches", doc: props.match.params.matchId },
     {
       collection: "matches",
@@ -234,10 +235,10 @@ export default compose(
       subcollections: [
         {
           collection: "firstInningsScore",
-          orderBy: ["createdAt", "desc"]
-        }
+          orderBy: ["createdAt", "desc"],
+        },
       ],
-      storeAs: "firstInningsScore"
+      storeAs: "firstInningsScore",
     },
     {
       collection: "matches",
@@ -245,38 +246,38 @@ export default compose(
       subcollections: [
         {
           collection: "secondInningsScore",
-          orderBy: ["createdAt", "desc"]
-        }
+          orderBy: ["createdAt", "desc"],
+        },
       ],
-      storeAs: "secondInningsScore"
+      storeAs: "secondInningsScore",
     },
     {
       collection: "matches",
       doc: props.match.params.matchId,
       subcollections: [{ collection: "firstInningsBatting" }],
       orderBy: ["battingOrder", "asc"],
-      storeAs: "firstInningsBatting"
+      storeAs: "firstInningsBatting",
     },
     {
       collection: "matches",
       doc: props.match.params.matchId,
       subcollections: [{ collection: "firstInningsBowling" }],
       orderBy: ["bowlingOrder", "asc"],
-      storeAs: "firstInningsBowling"
+      storeAs: "firstInningsBowling",
     },
     {
       collection: "matches",
       doc: props.match.params.matchId,
       subcollections: [{ collection: "secondInningsBatting" }],
       orderBy: ["battingOrder", "asc"],
-      storeAs: "secondInningsBatting"
+      storeAs: "secondInningsBatting",
     },
     {
       collection: "matches",
       doc: props.match.params.matchId,
       subcollections: [{ collection: "secondInningsBowling" }],
       orderBy: ["bowlingOrder", "asc"],
-      storeAs: "secondInningsBowling"
-    }
+      storeAs: "secondInningsBowling",
+    },
   ])
 )(FullScorecard);

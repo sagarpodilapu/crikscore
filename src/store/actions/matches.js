@@ -1,4 +1,4 @@
-export const createMatch = match => {
+export const createMatch = (match) => {
   return (dispatch, getState, { getFirebase, getFirestore }) => {
     const firestore = getFirestore();
     const profile = getState().firebase.profile;
@@ -14,12 +14,12 @@ export const createMatch = match => {
           scorerLastName: profile.lastName,
           scorerId: scorerId,
           status: 1,
-          createdAt: new Date()
+          createdAt: new Date(),
         })
         .then(() => {
           console.log(match.teamOne + " team added successfully");
         })
-        .catch(err => console.log(err));
+        .catch((err) => console.log(err));
     }
 
     if (match.teamTwoId === "") {
@@ -32,12 +32,12 @@ export const createMatch = match => {
           scorerLastName: profile.lastName,
           scorerId: scorerId,
           status: 1,
-          createdAt: new Date()
+          createdAt: new Date(),
         })
         .then(() => {
           console.log(match.teamTwo + " team added successfully");
         })
-        .catch(err => console.log(err));
+        .catch((err) => console.log(err));
     }
     if (match.batting === "teamOne") {
       match = {
@@ -49,7 +49,7 @@ export const createMatch = match => {
         secondBowlingId: match.teamOneId,
         secondBowling: match.teamOne,
         secondBattingId: match.teamTwoId,
-        secondBatting: match.teamTwo
+        secondBatting: match.teamTwo,
       };
     } else {
       match = {
@@ -61,7 +61,7 @@ export const createMatch = match => {
         secondBattingId: match.teamOneId,
         secondBatting: match.teamOne,
         secondBowlingId: match.teamTwoId,
-        secondBowling: match.teamTwo
+        secondBowling: match.teamTwo,
       };
     }
     let tossInformation =
@@ -89,17 +89,16 @@ export const createMatch = match => {
         secondInningsOvers: 0.0,
         secondInningsWickets: 0,
         tossInformation: tossInformation,
-        createdAt: new Date()
+        createdAt: new Date(),
       })
       .then(() => {
         match = { ...match, id: ref.id };
-        console.log("match created successfully");
         dispatch({ type: "CREATE_MATCH", match });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 };
-export const addBowler = player => {
+export const addBowler = (player) => {
   return (dispatch, getState, { getFirebase, getFirestore }) => {
     const firestore = getFirestore();
     const currentMatch = getState().firestore.ordered.matches;
@@ -119,7 +118,7 @@ export const addBowler = player => {
     dispatch(updateScore(scorePayload, scoreCollection));
   };
 };
-export const addBatsman = player => {
+export const addBatsman = (player) => {
   return (dispatch, getState, { getFirebase, getFirestore }) => {
     const firestore = getFirestore();
     const currentMatch = getState().firestore.ordered.matches;
@@ -199,16 +198,14 @@ export const addPlayers = (striker, nonStriker, bowler) => {
       extraType: "",
       whoIsOut: "",
       showBall: false,
-      nextBallCounted: true
+      nextBallCounted: true,
     };
     let matchPayload = {
       ...match,
       status: status,
       statusType: statusType,
-      initialPlayersNeeded: false
+      initialPlayersNeeded: false,
     };
-    console.log(scoreCollection);
-    console.log(match.currentInnings);
     dispatch(addScoreToMatch(score, scoreCollection));
     dispatch(updateMatch(matchPayload));
   };
@@ -231,15 +228,15 @@ export const addPlayerToMatch = (player, whichCollection) => {
         addedBy: scorerId,
         addedByName: `${profile.firstName} ${profile.lastName}`,
         status: 1,
-        createdAt: new Date()
+        createdAt: new Date(),
       })
       .then(() => {
         console.log(player.name + " added to match");
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 };
-export const addPlayer = player => {
+export const addPlayer = (player) => {
   return (dispatch, getState, { getFirebase, getFirestore }) => {
     const firestore = getFirestore();
     const profile = getState().firebase.profile;
@@ -252,12 +249,12 @@ export const addPlayer = player => {
         addedBy: scorerId,
         addedByName: `${profile.firstName} ${profile.lastName}`,
         status: 1,
-        createdAt: new Date()
+        createdAt: new Date(),
       })
       .then(() => {
         console.log(player.name + " added");
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
     firestore
       .collection("teams")
       .doc(player.teamId)
@@ -269,12 +266,12 @@ export const addPlayer = player => {
         addedBy: scorerId,
         addedByName: `${profile.firstName} ${profile.lastName}`,
         status: 1,
-        createdAt: new Date()
+        createdAt: new Date(),
       })
       .then(() => {
         console.log(player.name + " added to team " + player.teamName);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 };
 export const addScoreToMatch = (score, whichCollection) => {
@@ -284,8 +281,6 @@ export const addScoreToMatch = (score, whichCollection) => {
     const scorerId = getState().firebase.auth.uid;
     const currentMatch = getState().firestore.ordered.matches;
     const match = currentMatch[0];
-    console.log(match.currentInnings);
-    console.log(whichCollection);
     firestore
       .collection("matches")
       .doc(match.id)
@@ -296,14 +291,12 @@ export const addScoreToMatch = (score, whichCollection) => {
         addedBy: scorerId,
         addedByName: `${profile.firstName} ${profile.lastName}`,
         status: 1,
-        createdAt: new Date()
+        createdAt: new Date(),
       })
       .then(() => {
-        console.log(score);
         console.log("score added to match");
-        // dispatch({ type: "ADD_SCORE", score });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 };
 export const getTeamPlayers = (teamId, teamAction) => {
@@ -314,10 +307,10 @@ export const getTeamPlayers = (teamId, teamAction) => {
       .doc(teamId)
       .collection("players")
       .get()
-      .then(somedoc => {
+      .then((somedoc) => {
         if (somedoc.size > 0) {
           let teamData = [];
-          somedoc.forEach(snapshot => {
+          somedoc.forEach((snapshot) => {
             let teamSingleData = snapshot.data();
             teamData.push(teamSingleData);
           });
@@ -326,15 +319,13 @@ export const getTeamPlayers = (teamId, teamAction) => {
           } else {
             dispatch({ type: "BOWLING_TEAM_SQUAD", teamData });
           }
-          // console.log(somedoc.data());
         } else {
-          console.log("no data available");
         }
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 };
-export const updateMatch = payload => {
+export const updateMatch = (payload) => {
   return (dispatch, getState, { getFirebase, getFirestore }) => {
     const firestore = getFirestore();
     const currentMatch = getState().firestore.ordered.matches;
@@ -344,14 +335,13 @@ export const updateMatch = payload => {
       .doc(match.id)
       .set({
         ...payload,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       })
       .then(() => {
         // dispatch({ type: "CREATE_MATCH", match });
-        console.log(payload);
         console.log("match updated...");
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 };
 export const overComplete = () => {
@@ -376,11 +366,11 @@ export const updateScore = (payload, whichCollection) => {
       .doc(payload.id)
       .set({
         ...payload,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       })
       .then(() => {
         console.log("score updated... ");
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 };

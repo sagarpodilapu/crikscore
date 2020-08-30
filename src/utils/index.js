@@ -2,7 +2,12 @@ import { find, floor, isEmpty, round } from "lodash";
 const CART_KEY = "cart";
 const TOKEN_KEY = "jwt";
 
-export const calculateOvers = balls => {
+export const calculateBalls = (overs) => {
+  let balls = overs * 6;
+  return balls;
+};
+
+export const calculateOvers = (balls) => {
   let overs = floor(balls / 6);
   let localBalls = balls % 6;
   localBalls = localBalls === 0 ? "" : `.${localBalls}`;
@@ -15,8 +20,6 @@ export const calculateEco = (runs, balls) => {
 };
 
 export const currentRR = (runs, balls) => {
-  console.log(runs);
-  console.log(balls);
   if (balls === undefined || runs === undefined || balls === 0 || runs === 0)
     return "INF";
   return round((runs * 6) / balls, 2);

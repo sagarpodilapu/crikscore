@@ -21,6 +21,7 @@ import {
   expectedRuns,
   currentRR,
   requiredRR,
+  calculateBalls,
 } from "../../utils";
 import LiveScorecard from "./LiveScorecard";
 import BowlerModal from "./BowlerModal";
@@ -77,6 +78,11 @@ class Console extends Component {
       } else if (
         currentMatch[0].secondInningsWickets === currentMatch[0].players - 1 &&
         currentMatch[0].currentInnings === "SECOND_INNINGS"
+      ) {
+        this.handleEndMatch();
+      }
+      if (
+        currentMatch[0].secondInningsRuns > currentMatch[0].firstInningsRuns
       ) {
         this.handleEndMatch();
       }
@@ -444,11 +450,37 @@ class Console extends Component {
   };
   handleEndMatch = () => {
     const { currentMatch } = this.props;
+    let winner,
+      winnerInformation,
+      wicketsRemaining,
+      ballsRemaining,
+      runsRemaining;
+    if (currentMatch[0].secondInningsRuns > currentMatch[0].firstInningsRuns) {
+      winner = currentMatch[0].secondBatting;
+      wicketsRemaining =
+        currentMatch[0].players - 1 - currentMatch[0].secondInningsWickets;
+      ballsRemaining =
+        calculateBalls(currentMatch[0].overs) -
+        calculateBalls(currentMatch[0].secondInningsOvers);
+      winnerInformation = `${winner} won the game by ${wicketsRemaining} wickets`;
+    } else if (
+      currentMatch[0].secondInningsRuns < currentMatch[0].firstInningsRuns
+    ) {
+      winner = currentMatch[0].firstBatting;
+      runsRemaining =
+        currentMatch[0].firstInningsRuns - currentMatch[0].secondInningsRuns;
+      winnerInformation = `${winner} won the game by ${runsRemaining} runs`;
+    } else {
+      winner = "";
+      winnerInformation = "Match is tied";
+    }
     let match = {
       ...currentMatch[0],
       status: 4,
       statusType: "MATCH_ENDED",
       currentInnings: "SECOND_INNINGS",
+      winner,
+      winnerInformation,
     };
     this.props.updateMatch(match);
     this.props.history.push("/");
@@ -579,6 +611,17 @@ class Console extends Component {
                           />
                         </div>
                       </div>
+                    </div>
+                  </div>
+                  <div className="row my-1 px-4">
+                    <div className="col p-1 bg-light">
+                      {striker.runs}({striker.balls})
+                    </div>
+                    <div className="col p-1 bg-light">
+                      <span className="float-right">
+                        {bowler.runs}/{bowler.wickets}(
+                        {calculateOvers(bowler.balls)})
+                      </span>
                     </div>
                   </div>
                   <div className="row my-1 py-1 px-4">
@@ -788,6 +831,7 @@ const mapStateToProps = (state) => {
     }
     if (!currentMatch[0].initialPlayersNeeded && score) {
       score = score[0];
+
       striker = score.striker;
       bowler = score.bowler;
       nonStriker = score.nonStriker;
@@ -802,7 +846,7 @@ const mapStateToProps = (state) => {
         striker = nonStriker;
         nonStriker = tempStriker;
       }
-      if (!isEmpty(score.newBowler)) {
+      if (!isEmpty(score.newBowler) && score.newBowler.id !== bowler.id) {
         bowler = score.newBowler;
       }
 

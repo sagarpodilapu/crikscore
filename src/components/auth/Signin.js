@@ -28,7 +28,6 @@ class Signin extends Component {
   };
   render() {
     const { auth, signInError } = this.props;
-    console.log(signInError);
     const signInErrorFlag = signInError !== "";
     if (auth.uid) {
       return <Redirect to="/" />;
