@@ -7,13 +7,13 @@ const InningsBowling = ({ players }) => {
       <thead>
         <tr>
           <th width="40%">Bowler</th>
-          <th>Ovs</th>
-          <th>R</th>
-          <th>Wks</th>
-          <th>0s</th>
-          <th>4s</th>
-          <th>6s</th>
-          <th>Eco</th>
+          <th className="text-center">Ovs</th>
+          <th className="text-center">R</th>
+          <th className="text-center">Wks</th>
+          <th className="text-center">0s</th>
+          <th className="text-center">4s</th>
+          <th className="text-center">6s</th>
+          <th className="text-center">Eco</th>
         </tr>
       </thead>
       <tbody>

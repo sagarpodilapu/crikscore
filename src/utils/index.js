@@ -2,6 +2,30 @@ import { find, floor, isEmpty, round } from "lodash";
 const CART_KEY = "cart";
 const TOKEN_KEY = "jwt";
 
+export const fow = (score) => {
+  if (score == undefined) return;
+  const fowScore = score.filter(function (s) {
+    return s.out == true;
+  });
+  let fowBatsmen = [];
+  fowScore.map((fowSingle) => {
+    fowBatsmen.push(
+      `${fowSingle.totalWickets}-${fowSingle.totalRuns} (${fowSingle.whoIsOut.name}, ${fowSingle.currentOver})`
+    );
+  });
+  return fowBatsmen.reverse().join(", ");
+};
+
+export const extras = (score) => {
+  if (score == undefined) return;
+  const extrasScore = score.filter(function (s) {
+    return s.extra == true;
+  });
+  console.log(extrasScore);
+  let extraCalc = [];
+  extrasScore.map((e) => {});
+};
+
 export const calculateBalls = (overs) => {
   let balls = overs * 6;
   return balls;

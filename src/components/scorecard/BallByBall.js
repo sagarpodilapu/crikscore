@@ -2,7 +2,6 @@ import React from "react";
 import { ListGroup, Table } from "reactstrap";
 
 const BallByBall = ({ match, firstInningsScore, secondInningsScore }) => {
-  console.log(match);
   return (
     <Table size="sm" borderless>
       <thead>

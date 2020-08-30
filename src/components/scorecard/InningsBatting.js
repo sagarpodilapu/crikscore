@@ -1,18 +1,22 @@
 import React from "react";
 import { Table } from "reactstrap";
 
-const InningsBatting = ({ players, finalScore }) => {
+import { fow, extras } from "../../utils";
+
+const InningsBatting = ({ players, finalScore, score }) => {
+  let scoreFow = fow(score);
+  let extraScore = extras(score);
   return (
     <Table responsive size="sm">
       <thead>
         <tr>
           <th colSpan="2">Batsman</th>
-          <th>R</th>
-          <th>B</th>
-          <th>4s</th>
-          <th>6s</th>
-          <th>0s</th>
-          <th>SR</th>
+          <th className="text-center">R</th>
+          <th className="text-center">B</th>
+          <th className="text-center">4s</th>
+          <th className="text-center">6s</th>
+          <th className="text-center">0s</th>
+          <th className="text-center">SR</th>
         </tr>
       </thead>
       <tbody>
@@ -23,7 +27,15 @@ const InningsBatting = ({ players, finalScore }) => {
                 {player.name}
                 {player.onStrike ? "*" : ""}
               </th>
-              <th scope="row">{player.out ? "out" : ""}</th>
+              <th scope="row">
+                <span className="font-weight-lighter float-left">
+                  {player.out
+                    ? player.howOut !== "run out"
+                      ? `b ${player.howOut}`
+                      : "run out"
+                    : ""}
+                </span>
+              </th>
               <td>{player.runs}</td>
               <td>{player.balls}</td>
               <td>{player.fours}</td>
@@ -36,24 +48,32 @@ const InningsBatting = ({ players, finalScore }) => {
           <td colSpan="3">
             <strong>Extras</strong>
           </td>
-          <td colSpan="5">11 (lb 5, nb 2, w 4)</td>
+          <td colSpan="5">
+            <span className="float-right font-italic">
+              11 (lb 5, nb 2, w 4)
+            </span>
+          </td>
         </tr>
         <tr>
           <td>
             <strong>Total</strong>
           </td>
-          <td colSpan="7">{finalScore}</td>
+          <td colSpan="7">
+            {" "}
+            <span className="float-right font-weight-bolder">
+              {finalScore}
+            </span>{" "}
+          </td>
         </tr>
-        <tr>
+        {/* <tr>
           <td colSpan="8">
             <strong>Did not bat:</strong> P Chopra, K Gowtham, JC Archer, S
             Gopal, S Midhun, DS Kulkarni
           </td>
-        </tr>
+        </tr> */}
         <tr>
           <td colSpan="8">
-            <strong>Fall of Wickets:</strong> 1-5 (AM Rahane, 1.1 ov), 2-77 (JC
-            Buttler, 11.5 ov), 3-105 (RA Tripathi, 15.4 ov)
+            <strong>Fall of Wickets:</strong> {scoreFow}
           </td>
         </tr>
       </tbody>

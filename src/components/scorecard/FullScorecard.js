@@ -10,8 +10,6 @@ import InningsBatting from "./InningsBatting";
 import InningsBowling from "./InningsBowling";
 import BallByBall from "./BallByBall";
 
-import { currentRR } from "../../utils";
-
 import {
   TabContent,
   TabPane,
@@ -112,6 +110,7 @@ class FullScorecard extends Component {
                 <small className="float-right">1st Inn</small>
               </h3>
               <InningsBatting
+                score={firstInningsScore}
                 players={firstInningsBatting}
                 finalScore={`${currentMatch[0].firstInningsRuns}/${currentMatch[0].firstInningsWickets}(${currentMatch[0].firstInningsOvers}/${currentMatch[0].overs}, RR: 3.55)`}
               />
@@ -124,6 +123,7 @@ class FullScorecard extends Component {
                     <small className="float-right">2nd Inn</small>
                   </h3>
                   <InningsBatting
+                    score={secondInningsScore}
                     players={secondInningsBatting}
                     finalScore={`${currentMatch[0].secondInningsRuns}/${currentMatch[0].secondInningsWickets}(${currentMatch[0].secondInningsOvers}/${currentMatch[0].overs}, RR: 3.55)`}
                   />
