@@ -4,6 +4,28 @@ export const createMatch = (match) => {
     const profile = getState().firebase.profile;
     const scorerId = getState().firebase.auth.uid;
     const ref = firestore.collection("matches").doc();
+    if (match.tournamentId === "") {
+      const tournamentRef = firestore.collection("tournaments").doc();
+      match = { ...match, tournamentId: tournamentRef.id };
+      tournamentRef
+        .set({
+          name: match.tournament,
+          entryFee: "",
+          winnerPrizeMoney: "",
+          runnerPrizeMoney: "",
+          sponsors: "",
+          teams: "",
+          scorerFirstName: profile.firstName,
+          scorerLastName: profile.lastName,
+          scorerId: scorerId,
+          status: 1,
+          createdAt: new Date(),
+        })
+        .then(() => {
+          console.log(match.tournament + " tournament added successfully");
+        })
+        .catch((err) => console.log(err));
+    }
     if (match.teamOneId === "") {
       const teamOneref = firestore.collection("teams").doc();
       match = { ...match, teamOneId: teamOneref.id };
@@ -430,14 +452,13 @@ const createInningsScore = (finalScore, matchId) => {
       .doc(matchId)
       .set(finalScore, { merge: true })
       .then((doc) => {
-        console.log(doc);
+        // console.log(doc);
       })
       .catch((err) => console.log(err));
   };
 };
 
 const createFirstInningsStrikerScore = (striker, matchId) => {
-  console.log(striker);
   return (dispatch, getState, { getFirebase, getFirestore }) => {
     const firestore = getFirestore();
     firestore
@@ -447,7 +468,7 @@ const createFirstInningsStrikerScore = (striker, matchId) => {
       .doc(striker.id)
       .set(striker, { merge: true })
       .then((doc) => {
-        console.log(doc);
+        // console.log(doc);
       })
       .catch((err) => console.log(err));
   };
@@ -463,7 +484,7 @@ const createFirstInningsNonStrikerScore = (nonStriker, matchId) => {
       .doc(nonStriker.id)
       .set(nonStriker, { merge: true })
       .then((doc) => {
-        console.log(doc);
+        // console.log(doc);
       })
       .catch((err) => console.log(err));
   };
@@ -479,7 +500,7 @@ const createFirstInningsBowlerScore = (bowler, matchId) => {
       .doc(bowler.id)
       .set(bowler, { merge: true })
       .then((doc) => {
-        console.log(doc);
+        // console.log(doc);
       })
       .catch((err) => console.log(err));
   };
@@ -495,7 +516,7 @@ const createSecondInningsStrikerScore = (striker, matchId) => {
       .doc(striker.id)
       .set(striker, { merge: true })
       .then((doc) => {
-        console.log(doc);
+        // console.log(doc);
       })
       .catch((err) => console.log(err));
   };
@@ -511,7 +532,7 @@ const createSecondInningsNonStrikerScore = (nonStriker, matchId) => {
       .doc(nonStriker.id)
       .set(nonStriker, { merge: true })
       .then((doc) => {
-        console.log(doc);
+        // console.log(doc);
       })
       .catch((err) => console.log(err));
   };
@@ -527,7 +548,7 @@ const createSecondInningsBowlerScore = (bowler, matchId) => {
       .doc(bowler.id)
       .set(bowler, { merge: true })
       .then((doc) => {
-        console.log(doc);
+        // console.log(doc);
       })
       .catch((err) => console.log(err));
   };

@@ -2,8 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { firestoreConnect } from "react-redux-firebase";
-import moment from "moment";
-import { find, floor, isEmpty, round, map, findIndex } from "lodash";
+import { isEmpty } from "lodash";
 
 import LiveScorecard from "./LiveScorecard";
 import InningsBatting from "./InningsBatting";
@@ -24,6 +23,8 @@ import {
   Col,
 } from "reactstrap";
 import classnames from "classnames";
+
+import { currentRR, calculateBalls } from "../../utils";
 
 class FullScorecard extends Component {
   state = {
@@ -112,7 +113,14 @@ class FullScorecard extends Component {
               <InningsBatting
                 score={firstInningsScore}
                 players={firstInningsBatting}
-                finalScore={`${currentMatch[0].firstInningsRuns}/${currentMatch[0].firstInningsWickets}(${currentMatch[0].firstInningsOvers}/${currentMatch[0].overs}, RR: 3.55)`}
+                finalScore={`${currentMatch[0].firstInningsRuns}/${
+                  currentMatch[0].firstInningsWickets
+                }(${currentMatch[0].firstInningsOvers}/${
+                  currentMatch[0].overs
+                }, RR: ${currentRR(
+                  currentMatch[0].firstInningsRuns,
+                  calculateBalls(currentMatch[0].firstInningsOvers)
+                )})`}
               />
               <InningsBowling players={firstInningsBowling} />
 
@@ -125,7 +133,14 @@ class FullScorecard extends Component {
                   <InningsBatting
                     score={secondInningsScore}
                     players={secondInningsBatting}
-                    finalScore={`${currentMatch[0].secondInningsRuns}/${currentMatch[0].secondInningsWickets}(${currentMatch[0].secondInningsOvers}/${currentMatch[0].overs}, RR: 3.55)`}
+                    finalScore={`${currentMatch[0].secondInningsRuns}/${
+                      currentMatch[0].secondInningsWickets
+                    }(${currentMatch[0].secondInningsOvers}/${
+                      currentMatch[0].overs
+                    }, RR: ${currentRR(
+                      currentMatch[0].secondInningsRuns,
+                      calculateBalls(currentMatch[0].secondInningsOvers)
+                    )})`}
                   />
                   <InningsBowling players={secondInningsBowling} />
                 </div>
@@ -199,7 +214,7 @@ const mapStateToProps = (state, ownProps) => {
     } else {
       scores = sScore;
     }
-    if (scores) {
+    if (scores && scores.length) {
       score = scores[0];
       striker = score.striker;
       bowler = score.bowler;

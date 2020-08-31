@@ -150,3 +150,7 @@ footer.page-footer {
 .ball-0 {
   display: none !important;
 }
+
+.remove {
+  color: red;
+}

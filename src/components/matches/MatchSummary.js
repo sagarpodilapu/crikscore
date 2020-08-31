@@ -32,13 +32,18 @@ const MatchSummary = ({ match, auth, user }) => {
       <div className="card-header text-capitalize">
         {match.venue}
         <span className="float-right">
-          {match.overs} overs match
+          {match.overs}/{match.overs}
           {enableActions && (
-            <button onClick={() => removeMatch(match.id)}>X</button>
+            <i
+              className="fa fa-trash remove ml-1"
+              onClick={() => removeMatch(match.id)}
+              aria-hidden="true"
+            ></i>
           )}
         </span>
       </div>
       <div className="card-body">
+        {match.tournament && <div>{match.tournament}</div>}
         <span className="card-title score-values">
           {match.teamOne} <span className="text-uppercase">vs</span>{" "}
           {match.teamTwo}
@@ -52,6 +57,9 @@ const MatchSummary = ({ match, auth, user }) => {
             {matchStatusType}
           </span>
         </div>
+        {match.winnerInformation && (
+          <div className="score-sub-label">{match.winnerInformation}</div>
+        )}
         <hr />
         <div className="card-text">
           <div className="score-values">{match.firstBatting}</div>

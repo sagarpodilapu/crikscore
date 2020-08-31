@@ -1,6 +1,4 @@
-import React, { Component } from "react";
-import moment from "moment";
-import { Redirect } from "react-router-dom";
+import React from "react";
 import { calculateOvers, calculateEco } from "../../utils";
 
 const LiveScorecard = ({ striker, nonStriker, bowler }) => {

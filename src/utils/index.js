@@ -1,11 +1,11 @@
-import { find, floor, isEmpty, round } from "lodash";
+import { floor, round } from "lodash";
 const CART_KEY = "cart";
 const TOKEN_KEY = "jwt";
 
 export const fow = (score) => {
-  if (score == undefined) return;
+  if (score === undefined) return;
   const fowScore = score.filter(function (s) {
-    return s.out == true;
+    return s.out === true;
   });
   let fowBatsmen = [];
   fowScore.map((fowSingle) => {
@@ -17,9 +17,9 @@ export const fow = (score) => {
 };
 
 export const extras = (score) => {
-  if (score == undefined) return;
+  if (score === undefined) return;
   const extrasScore = score.filter(function (s) {
-    return s.extra == true;
+    return s.extra === true;
   });
   console.log(extrasScore);
   let extraCalc = [];
@@ -27,7 +27,11 @@ export const extras = (score) => {
 };
 
 export const calculateBalls = (overs) => {
-  let balls = overs * 6;
+  if (overs === 0) return overs;
+  let temp = overs.split(".");
+  let balls;
+  if (temp.length === 2) balls = parseInt(temp[0]) * 6 + parseInt(temp[1]);
+  else balls = parseInt(temp[0]) * 6;
   return balls;
 };
 

@@ -71,11 +71,13 @@ const InningsBatting = ({ players, finalScore, score }) => {
             Gopal, S Midhun, DS Kulkarni
           </td>
         </tr> */}
-        <tr>
-          <td colSpan="8">
-            <strong>Fall of Wickets:</strong> {scoreFow}
-          </td>
-        </tr>
+        {scoreFow && (
+          <tr>
+            <td colSpan="8">
+              <strong>Fall of Wickets:</strong> {scoreFow}
+            </td>
+          </tr>
+        )}
       </tbody>
     </Table>
   );

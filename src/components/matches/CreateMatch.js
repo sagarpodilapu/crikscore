@@ -13,6 +13,8 @@ import { has, startCase, toLower } from "lodash";
 
 class CreateMatch extends Component {
   state = {
+    tournament: "",
+    tournamentId: "",
     venue: "",
     players: 0,
     overs: 0,
@@ -46,10 +48,11 @@ class CreateMatch extends Component {
   };
   render() {
     const { teamOne, teamTwo, error } = this.state;
-    const { auth, teams } = this.props;
+    const { auth, teams, tournaments } = this.props;
     if (!auth.uid) {
       return <Redirect to="/signIn" />;
     }
+    console.log(tournaments);
     return (
       <div className="container">
         <div className="row">
@@ -73,6 +76,45 @@ class CreateMatch extends Component {
                     id="venue"
                     onChange={this.handleChange}
                     required={true}
+                  />
+                </div>
+              </div>
+              <div className="form-group row">
+                <label htmlFor="tournament" className="col-sm-4 col-form-label">
+                  Tournament
+                </label>
+                <div className="col-sm-8">
+                  {/* <input
+                    type="text"
+                    className="form-control"
+                    id="tournament"
+                    onChange={this.handleChange}
+                    required={true}
+                  /> */}
+                  <Typeahead
+                    id="tournaments"
+                    labelKey="name"
+                    onChange={(selected) => {
+                      console.log(selected);
+                      if (selected.length) {
+                        let tournamentId;
+                        if (has(selected[0], "customOption")) {
+                          tournamentId = "";
+                        } else {
+                          tournamentId = selected[0].id;
+                        }
+
+                        this.setState({
+                          tournament: startCase(toLower(selected[0].name)),
+                          tournamentId: tournamentId,
+                        });
+                      }
+                    }}
+                    allowNew={true}
+                    options={tournaments !== undefined ? tournaments : []}
+                    filterBy={["name"]}
+                    placeholder="Type tournament name..."
+                    newSelectionPrefix="Choose : "
                   />
                 </div>
               </div>
@@ -251,6 +293,7 @@ const mapStateToProps = (state) => {
   return {
     auth: state.firebase.auth,
     teams: state.firestore.ordered.teams,
+    tournaments: state.firestore.ordered.tournaments,
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -261,5 +304,5 @@ const mapDispatchToProps = (dispatch) => {
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
-  firestoreConnect([{ collection: "teams" }])
+  firestoreConnect([{ collection: "teams" }, { collection: "tournaments" }])
 )(CreateMatch);
