@@ -137,6 +137,7 @@ class Console extends Component {
     return localVariable;
   };
   handleRunClick = (eachRun) => {
+    this.handleSubmitUI();
     const { ER } = this.state;
     let localEr = this.handleUIReset(ER);
     let localIndex = findIndex(localEr, eachRun);
@@ -339,7 +340,8 @@ class Console extends Component {
           onStrike: false,
         };
       }
-      if (currentBall !== 0 && currentBall % 6 === 0 && !extra) {
+
+      if (currentBall !== 0 && currentBall % 6 === 0 && !extraRun) {
         overCompleted = true;
       }
       let payload = {
@@ -394,8 +396,6 @@ class Console extends Component {
     const { score } = this.props;
     const { scoreCollection } = this.state;
     let localScore = { ...score, changeStrike: true };
-    //11 - update
-    console.log("strike changed");
     this.props.updateScore(localScore, scoreCollection);
   };
   handleBowler = () => {
@@ -413,8 +413,6 @@ class Console extends Component {
         bowlingOrder: currentInningsBowling.length + 1,
       });
     } else {
-      //2 - update
-      console.log("bowler changed");
       this.props.updateScore(
         { ...score, newBowler: alreadyExists },
         scoreCollection
@@ -436,8 +434,6 @@ class Console extends Component {
         battingOrder: currentInningsBatting.length + 1,
       });
     } else {
-      //4 - update
-      console.log("batsmen changed");
       this.props.updateScore(
         { ...score, newBatsman: alreadyExists },
         scoreCollection
@@ -553,6 +549,7 @@ class Console extends Component {
       bowlingTeam,
       bowlingTeamId,
       error,
+      currentRunJson,
     } = this.state;
     if (!auth.uid) {
       return <Redirect to="/signIn" />;
@@ -676,7 +673,7 @@ class Console extends Component {
                       <h3 className="score-label">extra</h3>
 
                       {EE.map((eachExtra, index) => (
-                        <div
+                        <button
                           key={index}
                           onClick={() => {
                             this.handleExtra(eachExtra);
@@ -687,16 +684,20 @@ class Console extends Component {
                               ? eachExtra.selectedStyle
                               : eachExtra.style
                           }
+                          disabled={
+                            currentRunJson.run === 0 &&
+                            eachExtra.zeroRunDisabled
+                          }
                         >
                           {eachExtra.type}
-                        </div>
+                        </button>
                       ))}
                     </div>
                     <div className="col">
                       <h3 className="score-label">wicket</h3>
 
                       {WK.map((eachOut, index) => (
-                        <div
+                        <button
                           key={index}
                           onClick={() => {
                             this.handleOut(eachOut);
@@ -707,9 +708,12 @@ class Console extends Component {
                               ? eachOut.selectedStyle
                               : eachOut.style
                           }
+                          disabled={
+                            currentRunJson.run !== 0 && eachOut.runDisabled
+                          }
                         >
                           {eachOut.type}
-                        </div>
+                        </button>
                       ))}
                     </div>
                   </div>

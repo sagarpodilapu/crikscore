@@ -16,7 +16,8 @@ export const extrasJson = [
     batsmanBall: false,
     bowlerBall: false,
     batsmanRun: false,
-    bowlerRun: true
+    bowlerRun: true,
+    zeroRunDisabled: false,
   },
   {
     type: "no ball",
@@ -35,7 +36,8 @@ export const extrasJson = [
     batsmanBall: true,
     bowlerBall: false,
     batsmanRun: true,
-    bowlerRun: true
+    bowlerRun: true,
+    zeroRunDisabled: false,
   },
   {
     type: "bye",
@@ -54,7 +56,8 @@ export const extrasJson = [
     batsmanBall: true,
     bowlerBall: true,
     batsmanRun: false,
-    bowlerRun: false
+    bowlerRun: false,
+    zeroRunDisabled: true,
   },
   {
     type: "leg bye",
@@ -73,7 +76,8 @@ export const extrasJson = [
     batsmanBall: true,
     bowlerBall: true,
     batsmanRun: false,
-    bowlerRun: false
+    bowlerRun: false,
+    zeroRunDisabled: true,
   },
   {
     type: "no extra",
@@ -92,8 +96,9 @@ export const extrasJson = [
     batsmanBall: true,
     bowlerBall: true,
     batsmanRun: true,
-    bowlerRun: true
-  }
+    bowlerRun: true,
+    zeroRunDisabled: false,
+  },
 ];
 export const runsJson = [
   {
@@ -104,7 +109,7 @@ export const runsJson = [
       "col current-run bg-success text-white align-middle mx-1 p-1",
     id: "zero",
     event: ".",
-    disable: ["bye", "legBye"]
+    disable: ["bye", "legBye"],
   },
   {
     run: 1,
@@ -114,7 +119,7 @@ export const runsJson = [
       "col current-run bg-success text-white align-middle mx-1 p-1",
     id: "one",
     event: "1",
-    disable: []
+    disable: [],
   },
   {
     run: 2,
@@ -124,7 +129,7 @@ export const runsJson = [
       "col current-run bg-success text-white align-middle mx-1 p-1",
     id: "two",
     event: "2",
-    disable: []
+    disable: [],
   },
   {
     run: 3,
@@ -134,7 +139,7 @@ export const runsJson = [
       "col current-run bg-success text-white align-middle mx-1 p-1",
     id: "three",
     event: "3",
-    disable: []
+    disable: [],
   },
   {
     run: 4,
@@ -144,7 +149,7 @@ export const runsJson = [
       "col current-run bg-success text-white align-middle mx-1 p-1",
     id: "four",
     event: "4",
-    disable: []
+    disable: [],
   },
   {
     run: 5,
@@ -154,7 +159,7 @@ export const runsJson = [
       "col current-run bg-success text-white align-middle mx-1 p-1",
     id: "five",
     event: "5",
-    disable: []
+    disable: [],
   },
   {
     run: 6,
@@ -164,8 +169,8 @@ export const runsJson = [
       "col current-run bg-success text-white align-middle mx-1 p-1",
     id: "six",
     event: "6",
-    disable: []
-  }
+    disable: [],
+  },
 ];
 
 export const outJson = [
@@ -181,7 +186,8 @@ export const outJson = [
     disabled: false,
     id: "out",
     out: true,
-    bowlerWicket: true
+    bowlerWicket: true,
+    runDisabled: true,
   },
   {
     type: "run out",
@@ -195,7 +201,8 @@ export const outJson = [
     disabled: false,
     id: "runOut",
     out: true,
-    bowlerWicket: false
+    bowlerWicket: false,
+    runDisabled: false,
   },
   {
     type: "retired out",
@@ -209,7 +216,8 @@ export const outJson = [
     disabled: false,
     id: "retiredOut",
     out: true,
-    bowlerWicket: false
+    bowlerWicket: false,
+    runDisabled: false,
   },
   {
     type: "not out",
@@ -223,7 +231,7 @@ export const outJson = [
     disabled: false,
     id: "notOut",
     out: false,
-    bowlerWicket: false
-  }
- 
+    bowlerWicket: false,
+    runDisabled: false,
+  },
 ];
