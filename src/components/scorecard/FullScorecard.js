@@ -57,10 +57,20 @@ class FullScorecard extends Component {
     if (currentMatch) {
       return (
         <div className="container mt-5">
-          <a href="/matches">All Matches</a>
-          <h3 className="score-label">
-            {currentMatch[0].teamOne} vs {currentMatch[0].teamTwo} at{" "}
-            {currentMatch[0].venue}
+          <h3>
+            <span className="score-label">{currentMatch[0].teamOne}</span> vs{" "}
+            <span className="score-label">{currentMatch[0].teamTwo}</span> at{" "}
+            {currentMatch[0].venueMap ? (
+              <a
+                target="_blank"
+                href={currentMatch[0].venueMap}
+                className="score-label"
+              >
+                {currentMatch[0].venue}
+              </a>
+            ) : (
+              <span className="score-label"> currentMatch[0].venue</span>
+            )}
           </h3>
           <Nav pills justified={true} fill={true}>
             <NavItem>

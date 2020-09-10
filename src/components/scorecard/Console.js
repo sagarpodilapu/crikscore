@@ -564,13 +564,19 @@ class Console extends Component {
                 {/* heading */}
                 <div className="m-3 border-bottom border-primary pb-3 score-label">
                   {currentMatch[0].teamOne} vs {currentMatch[0].teamTwo} at{" "}
-                  {currentMatch[0].venue}
-                  <span className="float-right text-danger score-values">
+                  {currentMatch[0].venueMap ? (
+                    <a target="_blank" href={currentMatch[0].venueMap}>
+                      {currentMatch[0].venue}
+                    </a>
+                  ) : (
+                    currentMatch[0].venue
+                  )}
+                  <div className="text-danger score-values">
                     {currentMatch[0].currentInnings === "FIRST_INNINGS"
                       ? "1st"
                       : "2nd"}{" "}
                     Inn
-                  </span>
+                  </div>
                 </div>
                 {/* top panel */}
                 <div className="container">

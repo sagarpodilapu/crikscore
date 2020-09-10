@@ -3,34 +3,35 @@ import moment from "moment";
 import { Link, Redirect } from "react-router-dom";
 import firebase from "firebase";
 
+import CopyToClickboard from "../extras/CopyToClickboard";
+import { matchActions, iframeText } from "../../config/match-summary";
+
 const MatchSummary = ({ match, auth, user }) => {
   let url = `/match/${match.id}/score`;
   const removeMatch = (matchId) => {};
 
   const enableActions = auth.uid === match.scorerId;
-  let matchStatusType,
-    matchStatusTypeClass,
-    showMatchLink = true;
-  if (match.statusType === "STARTED") {
-    matchStatusTypeClass = "badge-success";
-    matchStatusType = "Started";
+  let matchActionIndex = 0;
+  console.log(match);
+  if (match.statusType === "TOSS") {
+    matchActionIndex = 3;
+    console.log(match);
   } else if (match.statusType === "MATCH_ENDED") {
-    matchStatusTypeClass = "badge-danger";
-    matchStatusType = "Ended";
+    matchActionIndex = 1;
   } else if (match.statusType === "INNINGS_BREAK") {
-    matchStatusTypeClass = "badge-info";
-    matchStatusType = "Break";
-    showMatchLink = false;
-  } else {
-    showMatchLink = false;
-    matchStatusType = "Toss";
-    matchStatusTypeClass = "badge-secondary";
+    matchActionIndex = 2;
   }
 
   return (
     <div className="card mb-2">
       <div className="card-header text-capitalize">
-        {match.venue}
+        {match.venueMap ? (
+          <a class="btn btn-link" target="_blank" href={match.venueMap}>
+            {match.venue}
+          </a>
+        ) : (
+          match.venue
+        )}
         <span className="float-right">
           {match.overs}/{match.overs}
           {enableActions && (
@@ -53,8 +54,10 @@ const MatchSummary = ({ match, auth, user }) => {
         </div>
         <div className="score-sub-label">{match.tossInformation}</div>
         <div>
-          <span className={`badge badge-pill ${matchStatusTypeClass}`}>
-            {matchStatusType}
+          <span
+            className={`badge badge-pill ${matchActions[matchActionIndex].matchStatusTypeClass}`}
+          >
+            {matchActions[matchActionIndex].matchStatusType}
           </span>
         </div>
         {match.winnerInformation && (
@@ -101,7 +104,7 @@ const MatchSummary = ({ match, auth, user }) => {
         </div>
       </div>
       <div className="card-footer">
-        {/* {!showMatchLink && (
+        {/* {!matchActions[matchActionIndex].showMatchLink && (
           <Link
             to={`/match/${match.id}/addPlayers`}
             className="float-left btn btn-dark btn-sm"
@@ -109,7 +112,7 @@ const MatchSummary = ({ match, auth, user }) => {
             Add Players
           </Link>
         )} */}
-        {showMatchLink && (
+        {matchActions[matchActionIndex].showMatchLink && (
           <Link
             to={`/match/${match.id}/scorecard`}
             className="float-left btn btn-info btn-sm"
@@ -117,12 +120,21 @@ const MatchSummary = ({ match, auth, user }) => {
             View Score
           </Link>
         )}
+
         {enableActions && (
           <Link to={url} className="float-right btn btn-primary btn-sm">
             Start Scoring
           </Link>
         )}
         {/* <span>{user && user.initials}</span> */}
+
+        {match &&
+          enableActions &&
+          matchActions[matchActionIndex].showEmbedLink && (
+            <CopyToClickboard
+              textToCopy={iframeText.replace("MATCH_ID", match.id)}
+            />
+          )}
       </div>
     </div>
   );

@@ -31,7 +31,6 @@ class CreateMatch extends Component {
   };
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log(this.state);
     const { teamOne, teamTwo, toss, batting } = this.state;
     if (teamOne === "Team One") {
       this.setState({ error: "Team One is required" });
@@ -52,7 +51,6 @@ class CreateMatch extends Component {
     if (!auth.uid) {
       return <Redirect to="/signIn" />;
     }
-    console.log(tournaments);
     return (
       <div className="container">
         <div className="row">
@@ -60,9 +58,7 @@ class CreateMatch extends Component {
             <form onSubmit={this.handleSubmit} autoComplete="off">
               <h5 className="dark">
                 Match Data
-                <span className="float-right">
-                  {moment().format("MMMM Do, h:mm a")}
-                </span>
+                <div>{moment().format("MMMM Do, h:mm a")}</div>
               </h5>
               <hr />
               <div className="form-group row">
@@ -74,6 +70,20 @@ class CreateMatch extends Component {
                     type="text"
                     className="form-control"
                     id="venue"
+                    onChange={this.handleChange}
+                    required={true}
+                  />
+                </div>
+              </div>
+              <div className="form-group row">
+                <label htmlFor="venueMap" className="col-sm-4 col-form-label">
+                  Venue Google Map Link
+                </label>
+                <div className="col-sm-8">
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="venueMap"
                     onChange={this.handleChange}
                     required={true}
                   />
@@ -95,7 +105,6 @@ class CreateMatch extends Component {
                     id="tournaments"
                     labelKey="name"
                     onChange={(selected) => {
-                      console.log(selected);
                       if (selected.length) {
                         let tournamentId;
                         if (has(selected[0], "customOption")) {
@@ -146,6 +155,7 @@ class CreateMatch extends Component {
                   />
                 </div>
               </div>
+              <hr class="mb-3 border border-warning" />
               <div className="form-group row">
                 <label htmlFor="teamOne" className="col-sm-4 col-form-label">
                   Team One
