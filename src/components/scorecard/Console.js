@@ -28,6 +28,7 @@ import BowlerModal from "./BowlerModal";
 import BatsmanModal from "./BatsmanModal";
 import OutModal from "./OutModal";
 import AddPlayerModal from "./AddPlayerModal";
+import ConfirmModal from "./ConfirmModal";
 
 import { Container, Row } from "reactstrap";
 
@@ -45,9 +46,9 @@ import {
 class Console extends Component {
   state = {
     whoIsOut: {},
-    bowlerModal: false,
+    bowlerModalFlag: false,
     batsmanModal: false,
-    outModal: false,
+    outModalFlag: false,
     ER: runsJson,
     EE: extrasJson,
     WK: outJson,
@@ -58,6 +59,9 @@ class Console extends Component {
     bowlingCollection: "firstInningsBowling",
     scoreCollection: "firstInningsScore",
     error: "",
+    confirmEndFlag: false,
+    confirmHeaderText: "",
+    endType: "",
   };
 
   componentDidUpdate(prevProps) {
@@ -120,14 +124,15 @@ class Console extends Component {
     if (score !== prevProps.score) {
       if (score) {
         this.setState({
-          bowlerModal: score.overCompleted && isEmpty(score.newBowler),
+          bowlerModalFlag: score.overCompleted && isEmpty(score.newBowler),
           batsmanModal: score.out && isEmpty(score.newBatsman),
         });
       }
     }
   }
   handleWhoIsOut = (player) => {
-    if (!isEmpty(player)) this.setState({ whoIsOut: player, outModal: false });
+    if (!isEmpty(player))
+      this.setState({ whoIsOut: player, outModalFlag: false });
   };
   handleUIReset = (localVariable) => {
     localVariable = map(localVariable, (l) => {
@@ -167,7 +172,7 @@ class Console extends Component {
     localWk[localIndex].selected = true;
     this.setState({
       WK: localWk,
-      outModal: eachWicket.openModal,
+      outModalFlag: eachWicket.openModal,
       whoIsOut: striker,
       currentOutJson: eachWicket,
     });
@@ -175,9 +180,9 @@ class Console extends Component {
   handleSubmitUI = () => {
     this.setState({
       whoIsOut: {},
-      bowlerModal: false,
+      bowlerModalFlag: false,
       batsmanModal: false,
-      outModal: false,
+      outModalFlag: false,
       ER: this.handleUIReset(this.state.ER),
       EE: this.handleUIReset(this.state.EE),
       WK: this.handleUIReset(this.state.WK),
@@ -399,27 +404,28 @@ class Console extends Component {
     this.props.updateScore(localScore, scoreCollection);
   };
   handleBowler = () => {
-    this.setState({ bowlerModal: true });
+    this.setState({ bowlerModalFlag: true });
   };
   handleChangeBowler = (e, bowler) => {
+    console.log(bowler);
     e.preventDefault();
-    const { currentInningsBowling, score } = this.props;
-    const { scoreCollection } = this.state;
-    var alreadyExists = find(currentInningsBowling, { id: bowler.id });
-    if (alreadyExists === undefined) {
-      //1 - update
-      this.props.addBowler({
-        ...bowler,
-        bowlingOrder: currentInningsBowling.length + 1,
-      });
-    } else {
-      this.props.updateScore(
-        { ...score, newBowler: alreadyExists },
-        scoreCollection
-      );
-    }
+    // const { currentInningsBowling, score } = this.props;
+    // const { scoreCollection } = this.state;
+    // var alreadyExists = find(currentInningsBowling, { id: bowler.id });
+    // if (alreadyExists === undefined) {
+    //   //1 - update
+    //   this.props.addBowler({
+    //     ...bowler,
+    //     bowlingOrder: currentInningsBowling.length + 1,
+    //   });
+    // } else {
+    //   this.props.updateScore(
+    //     { ...score, newBowler: alreadyExists },
+    //     scoreCollection
+    //   );
+    // }
     this.setState((prevState) => ({
-      bowlerModal: !prevState.bowlerModal,
+      bowlerModalFlag: !prevState.bowlerModalFlag,
     }));
   };
   handleChangeBatsman = (e, batsman) => {
@@ -499,7 +505,29 @@ class Console extends Component {
     this.props.updateMatch(match);
     this.props.history.push("/");
   };
-
+  handleConfirm = (type) => {
+    if (type === "INNINGS") {
+      this.setState({
+        confirmEndFlag: true,
+        confirmHeaderText: "Are you sure you want to End Innings?",
+        endType: type,
+      });
+    } else {
+      this.setState({
+        confirmEndFlag: true,
+        confirmHeaderText: "Are you sure you want to End Match?",
+        endType: type,
+      });
+    }
+  };
+  handleConfirmClick = () => {
+    const { endType } = this.state;
+    if (endType === "INNINGS") {
+      this.handleInnings();
+    } else {
+      this.handleEndMatch();
+    }
+  };
   lastSixBalls = (lastSixBalls) =>
     lastSixBalls.length !== 0 &&
     lastSixBalls.map((ball, i) => (
@@ -512,17 +540,22 @@ class Console extends Component {
     ));
   toggle = () => {
     this.setState((prevState) => ({
-      bowlerModal: !prevState.bowlerModal,
+      bowlerModalFlag: !prevState.bowlerModalFlag,
     }));
   };
   toggleOutModal = () => {
     this.setState((prevState) => ({
-      outModal: !prevState.outModal,
+      outModalFlag: !prevState.outModalFlag,
     }));
   };
   toggleBatsmanModal = () => {
     this.setState((prevState) => ({
       batsmanModal: !prevState.batsmanModal,
+    }));
+  };
+  toggleConfirmModal = () => {
+    this.setState((prevState) => ({
+      confirmEndFlag: !prevState.confirmEndFlag,
     }));
   };
 
@@ -538,11 +571,11 @@ class Console extends Component {
       auth,
     } = this.props;
     const {
-      bowlerModal,
+      bowlerModalFlag,
       ER,
       EE,
       WK,
-      outModal,
+      outModalFlag,
       batsmanModal,
       battingTeam,
       battingTeamId,
@@ -550,6 +583,8 @@ class Console extends Component {
       bowlingTeamId,
       error,
       currentRunJson,
+      confirmEndFlag,
+      confirmHeaderText,
     } = this.state;
     if (!auth.uid) {
       return <Redirect to="/signIn" />;
@@ -755,7 +790,7 @@ class Console extends Component {
                     <div className="col">
                       {currentMatch[0].currentInnings === "FIRST_INNINGS" && (
                         <button
-                          onClick={this.handleInnings}
+                          onClick={() => this.handleConfirm("INNINGS")}
                           className="btn btn-danger text-uppercase"
                         >
                           end innings
@@ -763,7 +798,7 @@ class Console extends Component {
                       )}
                       {currentMatch[0].currentInnings === "SECOND_INNINGS" && (
                         <button
-                          onClick={this.handleEndMatch}
+                          onClick={() => this.handleConfirm("MATCH")}
                           className="btn btn-danger text-uppercase"
                         >
                           end match
@@ -788,14 +823,15 @@ class Console extends Component {
                 </Link>
                 {/* modals */}
                 <BowlerModal
-                  openModal={bowlerModal}
+                  openModal={bowlerModalFlag}
                   submitBowler={this.handleChangeBowler}
                   bowlingSquad={bowlingSquad}
                   bowlingTeam={bowlingTeam}
                   bowlingTeamId={bowlingTeamId}
+                  toggle={this.toggle}
                 />
                 <OutModal
-                  openModal={outModal}
+                  openModal={outModalFlag}
                   toggle={this.toggleOutModal}
                   striker={striker}
                   nonStriker={nonStriker}
@@ -807,6 +843,12 @@ class Console extends Component {
                   battingSquad={battingSquad}
                   battingTeam={battingTeam}
                   battingTeamId={battingTeamId}
+                />
+                <ConfirmModal
+                  openModal={confirmEndFlag}
+                  toggle={this.toggleConfirmModal}
+                  heading={confirmHeaderText}
+                  confirmClick={this.handleConfirmClick}
                 />
               </div>
             </Row>
@@ -842,25 +884,24 @@ const mapStateToProps = (state) => {
   let bowler = {};
   let nonStriker = {};
   let currentMatch = state.firestore.ordered.matches;
-  let score;
+  let scores, score;
 
   let currentInningsBowling, currentInningsBatting;
   if (currentMatch) {
     if (currentMatch[0].currentInnings === "FIRST_INNINGS") {
-      score = state.firestore.ordered.firstInningsScore;
+      scores = state.firestore.ordered.firstInningsScore;
       currentInningsBowling = state.firestore.ordered.firstInningsBowling;
       currentInningsBatting = state.firestore.ordered.firstInningsBatting;
     } else {
-      score = state.firestore.ordered.secondInningsScore;
+      scores = state.firestore.ordered.secondInningsScore;
       currentInningsBowling = state.firestore.ordered.secondInningsBowling;
       currentInningsBatting = state.firestore.ordered.secondInningsBatting;
     }
-    if (!currentMatch[0].initialPlayersNeeded && score) {
-      score = score[0];
-
-      striker = score.striker;
-      bowler = score.bowler;
-      nonStriker = score.nonStriker;
+    if (!currentMatch[0].initialPlayersNeeded && scores) {
+      score = scores[0];
+      striker = score.striker || null;
+      bowler = score.bowler || null;
+      nonStriker = score.nonStriker || null;
 
       if (score.runs % 2 !== 0) {
         let tempStriker = striker;

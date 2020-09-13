@@ -26,7 +26,7 @@ const MatchSummary = ({ match, auth, user }) => {
     <div className="card mb-2">
       <div className="card-header text-capitalize">
         {match.venueMap ? (
-          <a class="btn btn-link" target="_blank" href={match.venueMap}>
+          <a className="btn btn-link" target="_blank" href={match.venueMap}>
             {match.venue}
           </a>
         ) : (

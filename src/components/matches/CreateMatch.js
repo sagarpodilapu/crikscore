@@ -16,8 +16,8 @@ class CreateMatch extends Component {
     tournament: "",
     tournamentId: "",
     venue: "",
-    players: 0,
-    overs: 0,
+    players: 11,
+    overs: 20,
     toss: "",
     batting: "",
     teamOne: "Team One",
@@ -46,7 +46,7 @@ class CreateMatch extends Component {
     }
   };
   render() {
-    const { teamOne, teamTwo, error } = this.state;
+    const { teamOne, teamTwo, error, players, overs } = this.state;
     const { auth, teams, tournaments } = this.props;
     if (!auth.uid) {
       return <Redirect to="/signIn" />;
@@ -85,7 +85,7 @@ class CreateMatch extends Component {
                     className="form-control"
                     id="venueMap"
                     onChange={this.handleChange}
-                    required={true}
+                    required={false}
                   />
                 </div>
               </div>
@@ -94,13 +94,6 @@ class CreateMatch extends Component {
                   Tournament
                 </label>
                 <div className="col-sm-8">
-                  {/* <input
-                    type="text"
-                    className="form-control"
-                    id="tournament"
-                    onChange={this.handleChange}
-                    required={true}
-                  /> */}
                   <Typeahead
                     id="tournaments"
                     labelKey="name"
@@ -138,6 +131,7 @@ class CreateMatch extends Component {
                     className="form-control"
                     id="players"
                     onChange={this.handleChange}
+                    value={players}
                   />
                 </div>
               </div>
@@ -152,10 +146,11 @@ class CreateMatch extends Component {
                     className="form-control"
                     id="overs"
                     onChange={this.handleChange}
+                    value={overs}
                   />
                 </div>
               </div>
-              <hr class="mb-3 border border-warning" />
+              <hr className="mb-3 border border-warning" />
               <div className="form-group row">
                 <label htmlFor="teamOne" className="col-sm-4 col-form-label">
                   Team One

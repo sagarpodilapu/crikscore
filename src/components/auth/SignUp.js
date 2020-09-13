@@ -10,7 +10,7 @@ import {
   FormGroup,
   Label,
   Input,
-  FormText
+  FormText,
 } from "reactstrap";
 
 class SignUp extends Component {
@@ -18,12 +18,12 @@ class SignUp extends Component {
     email: "",
     password: "",
     firstName: "",
-    lastName: ""
+    lastName: "",
   };
-  handleChange = e => {
+  handleChange = (e) => {
     this.setState({ [e.target.id]: e.target.value });
   };
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
     this.props.signUp(this.state);
   };
@@ -37,7 +37,7 @@ class SignUp extends Component {
         <Form onSubmit={this.handleSubmit}>
           <h5 className="border-bottom pb-2">Register</h5>
           <FormGroup row>
-            {signUpError && <div class="error">{signUpError}</div>}
+            {signUpError && <div className="error">{signUpError}</div>}
             <Label for="firstName" sm={2}>
               First Name
             </Label>
@@ -103,19 +103,16 @@ class SignUp extends Component {
     );
   }
 }
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     auth: state.firebase.auth,
-    signUpError: state.auth.signUpError
+    signUpError: state.auth.signUpError,
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    signUp: credentials => dispatch(signUp(credentials))
+    signUp: (credentials) => dispatch(signUp(credentials)),
   };
 };
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SignUp);
+export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
