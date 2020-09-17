@@ -12,10 +12,8 @@ const MatchSummary = ({ match, auth, user }) => {
 
   const enableActions = auth.uid === match.scorerId;
   let matchActionIndex = 0;
-  console.log(match);
   if (match.statusType === "TOSS") {
     matchActionIndex = 3;
-    console.log(match);
   } else if (match.statusType === "MATCH_ENDED") {
     matchActionIndex = 1;
   } else if (match.statusType === "INNINGS_BREAK") {
@@ -121,7 +119,7 @@ const MatchSummary = ({ match, auth, user }) => {
           </Link>
         )}
 
-        {enableActions && (
+        {enableActions && matchActions[matchActionIndex].showScoringLink && (
           <Link to={url} className="float-right btn btn-primary btn-sm">
             Start Scoring
           </Link>

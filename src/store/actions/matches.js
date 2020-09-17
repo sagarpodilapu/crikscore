@@ -1,3 +1,5 @@
+import { isEmpty } from "lodash";
+
 export const createMatch = (match) => {
   return (dispatch, getState, { getFirebase, getFirestore }) => {
     const firestore = getFirestore();
@@ -351,6 +353,60 @@ export const addScoreToMatch = (score, whichCollection) => {
       .catch((err) => console.log(err));
   };
 };
+
+export const resetScore = (score, previousScore, whichCollection) => {
+  return (dispatch, getState, { getFirebase, getFirestore }) => {
+    const firestore = getFirestore();
+    const currentMatch = getState().firestore.ordered.matches;
+    const match = currentMatch[0];
+    firestore
+      .collection("matches")
+      .doc(match.id)
+      .collection(whichCollection)
+      .doc(score.id)
+      .delete()
+      .then(() => {
+        console.log("score deleted from match");
+        let finalScore;
+        let localStriker = previousScore.striker.out
+          ? previousScore.newBatsman
+          : previousScore.striker;
+        let localNonStriker = previousScore.nonStriker.out
+          ? previousScore.newBatsman
+          : previousScore.nonStriker;
+        let localBowler = !isEmpty(previousScore.newBowler)
+          ? previousScore.newBowler
+          : previousScore.bowler;
+        if (whichCollection === "firstInningsScore") {
+          finalScore = {
+            firstInningsRuns: previousScore.totalRuns,
+            firstInningsWickets: previousScore.totalWickets,
+            firstInningsOvers: previousScore.currentOver,
+            updatedAt: new Date(),
+          };
+          dispatch(createFirstInningsStrikerScore(localStriker, match.id));
+          dispatch(
+            createFirstInningsNonStrikerScore(localNonStriker, match.id)
+          );
+          dispatch(createFirstInningsBowlerScore(localBowler, match.id));
+        } else {
+          finalScore = {
+            secondInningsRuns: previousScore.totalRuns,
+            secondInningsWickets: previousScore.totalWickets,
+            secondInningsOvers: previousScore.currentOver,
+            updatedAt: new Date(),
+          };
+          dispatch(createSecondInningsStrikerScore(localStriker, match.id));
+          dispatch(
+            createSecondInningsNonStrikerScore(localNonStriker, match.id)
+          );
+          dispatch(createSecondInningsBowlerScore(localBowler, match.id));
+        }
+        dispatch(createInningsScore(finalScore, match.id));
+      })
+      .catch((err) => console.log(err));
+  };
+};
 export const getTeamPlayers = (teamId, teamAction) => {
   return (dispatch, getState, { getFirebase, getFirestore }) => {
     const firestore = getFirestore();
@@ -422,23 +478,6 @@ export const updateScore = (payload, whichCollection) => {
       })
       .then(() => {
         console.log("score updated... ");
-        // let finalScore;
-        // if (whichCollection === "firstInningsScore") {
-        //   finalScore = {
-        //     firstInningsRuns: payload.totalRuns,
-        //     firstInningsWickets: payload.totalWickets,
-        //     firstInningsOvers: payload.currentOver,
-        //     updatedAt: new Date(),
-        //   };
-        // } else {
-        //   finalScore = {
-        //     secondInningsRuns: payload.totalRuns,
-        //     secondInningsWickets: payload.totalWickets,
-        //     secondInningsOvers: payload.currentOver,
-        //     updatedAt: new Date(),
-        //   };
-        // }
-        // createInningsScore(finalScore, match.id);
       })
       .catch((err) => console.log(err));
   };

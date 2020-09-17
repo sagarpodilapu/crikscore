@@ -10,6 +10,7 @@ import {
   addBatsman,
   addPlayers,
   updateMatch,
+  resetScore,
 } from "../../store/actions/matches";
 import { compose } from "redux";
 import { firestoreConnect } from "react-redux-firebase";
@@ -62,10 +63,11 @@ class Console extends Component {
     confirmEndFlag: false,
     confirmHeaderText: "",
     endType: "",
+    scoreSubmitted: true,
   };
 
   componentDidUpdate(prevProps) {
-    const { score, currentMatch } = this.props;
+    const { score, currentMatch, previousScore } = this.props;
     if (currentMatch !== prevProps.currentMatch) {
       let battingCollection,
         bowlingCollection,
@@ -129,6 +131,13 @@ class Console extends Component {
         });
       }
     }
+    // console.log(previousScore !== prevProps.previousScore);
+    if (previousScore !== prevProps.previousScore) {
+      let localScoreSubmitted = previousScore && !isEmpty(previousScore);
+      this.setState({
+        scoreSubmitted: localScoreSubmitted,
+      });
+    }
   }
   handleWhoIsOut = (player) => {
     if (!isEmpty(player))
@@ -151,6 +160,7 @@ class Console extends Component {
       ER: localEr,
       currentRunJson: eachRun,
       error: "",
+      scoreSubmitted: false,
     });
   };
   handleExtra = (eachExtra) => {
@@ -189,6 +199,7 @@ class Console extends Component {
       currentExtraJson: {},
       currentRunJson: {},
       currentOutJson: {},
+      scoreSubmitted: true,
     });
   };
   handleScore = () => {
@@ -397,6 +408,16 @@ class Console extends Component {
       }
     }
   };
+  handleReset = () => {
+    const { score, previousScore } = this.props;
+    const { scoreCollection } = this.state;
+    console.log(score);
+    console.log(previousScore);
+    this.props.resetScore(score, previousScore, scoreCollection);
+    this.setState({
+      scoreSubmitted: false,
+    });
+  };
   handleStrike = () => {
     const { score } = this.props;
     const { scoreCollection } = this.state;
@@ -407,23 +428,22 @@ class Console extends Component {
     this.setState({ bowlerModalFlag: true });
   };
   handleChangeBowler = (e, bowler) => {
-    console.log(bowler);
     e.preventDefault();
-    // const { currentInningsBowling, score } = this.props;
-    // const { scoreCollection } = this.state;
-    // var alreadyExists = find(currentInningsBowling, { id: bowler.id });
-    // if (alreadyExists === undefined) {
-    //   //1 - update
-    //   this.props.addBowler({
-    //     ...bowler,
-    //     bowlingOrder: currentInningsBowling.length + 1,
-    //   });
-    // } else {
-    //   this.props.updateScore(
-    //     { ...score, newBowler: alreadyExists },
-    //     scoreCollection
-    //   );
-    // }
+    const { currentInningsBowling, score } = this.props;
+    const { scoreCollection } = this.state;
+    var alreadyExists = find(currentInningsBowling, { id: bowler.id });
+    if (alreadyExists === undefined) {
+      //1 - update
+      this.props.addBowler({
+        ...bowler,
+        bowlingOrder: currentInningsBowling.length + 1,
+      });
+    } else {
+      this.props.updateScore(
+        { ...score, newBowler: alreadyExists },
+        scoreCollection
+      );
+    }
     this.setState((prevState) => ({
       bowlerModalFlag: !prevState.bowlerModalFlag,
     }));
@@ -569,6 +589,7 @@ class Console extends Component {
       bowlingSquad,
       battingSquad,
       auth,
+      previousScore,
     } = this.props;
     const {
       bowlerModalFlag,
@@ -585,6 +606,7 @@ class Console extends Component {
       currentRunJson,
       confirmEndFlag,
       confirmHeaderText,
+      scoreSubmitted,
     } = this.state;
     if (!auth.uid) {
       return <Redirect to="/signIn" />;
@@ -761,12 +783,21 @@ class Console extends Component {
                 </div>
                 {/* score submit */}
                 <div className="container mt-2">
-                  <button
-                    onClick={this.handleScore}
-                    className="btn btn-block btn-success text-uppercase"
-                  >
-                    Submit
-                  </button>
+                  {!scoreSubmitted ? (
+                    <button
+                      onClick={this.handleScore}
+                      className="btn btn-block btn-success text-uppercase"
+                    >
+                      Submit
+                    </button>
+                  ) : (
+                    <button
+                      onClick={this.handleReset}
+                      className="btn btn-block btn-danger text-uppercase"
+                    >
+                      Undo
+                    </button>
+                  )}
                 </div>
                 {/* change player panel */}
                 <div className="container my-2">
@@ -884,7 +915,9 @@ const mapStateToProps = (state) => {
   let bowler = {};
   let nonStriker = {};
   let currentMatch = state.firestore.ordered.matches;
-  let scores, score;
+  let scores,
+    score,
+    previousScore = {};
 
   let currentInningsBowling, currentInningsBatting;
   if (currentMatch) {
@@ -899,6 +932,7 @@ const mapStateToProps = (state) => {
     }
     if (!currentMatch[0].initialPlayersNeeded && scores) {
       score = scores[0];
+      if (scores[1]) previousScore = scores[1];
       striker = score.striker || null;
       bowler = score.bowler || null;
       nonStriker = score.nonStriker || null;
@@ -938,6 +972,7 @@ const mapStateToProps = (state) => {
     auth: state.firebase.auth,
     currentMatch: state.firestore.ordered.matches,
     score: score,
+    previousScore: previousScore,
     bowler: bowler,
     striker: striker,
     nonStriker: nonStriker,
@@ -959,7 +994,8 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(updateScore(score, whichCollection)),
     addPlayers: (striker, nonStriker, bowler) =>
       dispatch(addPlayers(striker, nonStriker, bowler)),
-
+    resetScore: (score, previousScore, whichCollection) =>
+      dispatch(resetScore(score, previousScore, whichCollection)),
     updateMatch: (payload) => dispatch(updateMatch(payload)),
   };
 };
@@ -1000,7 +1036,7 @@ export default compose(
         {
           collection: "firstInningsScore",
           orderBy: ["createdAt", "desc"],
-          limit: 1,
+          limit: 2,
         },
       ],
       storeAs: "firstInningsScore",
@@ -1012,7 +1048,7 @@ export default compose(
         {
           collection: "secondInningsScore",
           orderBy: ["createdAt", "desc"],
-          limit: 1,
+          limit: 2,
         },
       ],
       storeAs: "secondInningsScore",

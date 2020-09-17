@@ -5,13 +5,15 @@ export const matchActions = [
     matchStatusType: "Match Started",
     showMatchLink: true,
     showEmbedLink: true,
+    showScoringLink: true,
   },
   {
     status: "MATCH_ENDED",
     matchStatusTypeClass: "badge-danger",
     matchStatusType: "Match Ended",
     showMatchLink: true,
-    showEmbedLink: false,
+    showEmbedLink: true,
+    showScoringLink: false,
   },
   {
     status: "INNINGS_BREAK",
@@ -19,6 +21,7 @@ export const matchActions = [
     matchStatusType: "Innings Break",
     showMatchLink: false,
     showEmbedLink: true,
+    showScoringLink: true,
   },
   {
     status: "TOSS",
@@ -26,6 +29,7 @@ export const matchActions = [
     matchStatusType: "Toss",
     showMatchLink: false,
     showEmbedLink: true,
+    showScoringLink: true,
   },
 ];
 
