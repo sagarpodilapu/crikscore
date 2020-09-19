@@ -221,8 +221,9 @@ export const addPlayers = (striker, nonStriker, bowler) => {
       boundary: false,
       extraType: "",
       whoIsOut: "",
-      showBall: false,
       nextBallCounted: true,
+      nextBattingOrder: 3,
+      nextBowlingOrder: 2,
     };
     let matchPayload = {
       ...match,

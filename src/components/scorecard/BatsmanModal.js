@@ -58,7 +58,6 @@ class BatsmanModal extends React.Component {
                           teamName: battingTeam,
                           teamId: battingTeamId,
                           onStrike: true,
-                          bowlingOrder: 2,
                           balls: 0,
                           wickets: 0,
                           wides: 0,

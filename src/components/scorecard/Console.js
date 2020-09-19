@@ -236,6 +236,9 @@ class Console extends Component {
       let bowlerWicket = false;
       let boundary = false;
       let overCompleted = false;
+      let nextBattingOrder = score.nextBattingOrder;
+      let nextBowlingOrder = score.nextBowlingOrder;
+      localStriker = { ...localStriker, didNotBat: false };
       if (!isEmpty(currentRunJson)) {
         runs = parseInt(currentRunJson.run);
         finalRuns += runs;
@@ -271,6 +274,7 @@ class Console extends Component {
         bowlerWicket = currentOutJson.bowlerWicket;
         if (out) {
           totalWickets++;
+          nextBattingOrder++;
         }
       }
       currentEvent =
@@ -290,7 +294,10 @@ class Console extends Component {
         localStriker = { ...localStriker, balls: localStriker.balls + 1 };
       }
       if (batsmanRun) {
-        localStriker = { ...localStriker, runs: localStriker.runs + runs };
+        localStriker = {
+          ...localStriker,
+          runs: localStriker.runs + runs,
+        };
         if (runs === 0) {
           localStriker = { ...localStriker, dots: localStriker.dots + 1 };
           localBowler = { ...localBowler, dots: localBowler.dots + 1 };
@@ -326,11 +333,11 @@ class Console extends Component {
       localBowler = {
         ...localBowler,
         overs: calculateOvers(localBowler.balls),
-      };
-      localBowler = {
-        ...localBowler,
         eco: calculateEco(localBowler.runs, localBowler.balls),
+        currentlyBowling: true,
+        didNotBowl: false,
       };
+
       if (extraType === "wd") {
         localBowler = { ...localBowler, wides: localBowler.wides + 1 };
       }
@@ -358,7 +365,13 @@ class Console extends Component {
       }
 
       if (currentBall !== 0 && currentBall % 6 === 0 && !extraRun) {
+        localBowler = {
+          ...localBowler,
+          currentlyBowling: false,
+          didNotBowl: false,
+        };
         overCompleted = true;
+        nextBowlingOrder++;
       }
       let payload = {
         runs,
@@ -388,8 +401,11 @@ class Console extends Component {
         changeBowler: false,
         endInnings: false,
         finalRuns,
+        nextBattingOrder,
+        nextBowlingOrder,
       };
       //10 - update
+      console.log(payload);
       this.props.addScoreToMatch(payload, scoreCollection);
       this.handleSubmitUI();
       if (
@@ -436,7 +452,7 @@ class Console extends Component {
       //1 - update
       this.props.addBowler({
         ...bowler,
-        bowlingOrder: currentInningsBowling.length + 1,
+        bowlingOrder: score.nextBowlingOrder,
       });
     } else {
       this.props.updateScore(
@@ -457,7 +473,7 @@ class Console extends Component {
       //3 - update
       this.props.addBatsman({
         ...batsman,
-        battingOrder: currentInningsBatting.length + 1,
+        battingOrder: score.nextBattingOrder,
       });
     } else {
       this.props.updateScore(
@@ -620,7 +636,26 @@ class Console extends Component {
               <div className="my-2">
                 {/* heading */}
                 <div className="m-3 border-bottom border-primary pb-3 score-label">
-                  {currentMatch[0].teamOne} vs {currentMatch[0].teamTwo} at{" "}
+                  <span
+                    className={
+                      battingTeam === currentMatch[0].teamOne
+                        ? "border-bottom border-danger"
+                        : ""
+                    }
+                  >
+                    {currentMatch[0].teamOne}
+                  </span>{" "}
+                  vs{" "}
+                  <span
+                    className={
+                      battingTeam === currentMatch[0].teamTwo
+                        ? "border-bottom border-danger"
+                        : ""
+                    }
+                  >
+                    {currentMatch[0].teamTwo}
+                  </span>{" "}
+                  at{" "}
                   {currentMatch[0].venueMap ? (
                     <a target="_blank" href={currentMatch[0].venueMap}>
                       {currentMatch[0].venue}
@@ -628,12 +663,6 @@ class Console extends Component {
                   ) : (
                     currentMatch[0].venue
                   )}
-                  <div className="text-danger score-values">
-                    {currentMatch[0].currentInnings === "FIRST_INNINGS"
-                      ? "1st"
-                      : "2nd"}{" "}
-                    Inn
-                  </div>
                 </div>
                 {/* top panel */}
                 <div className="container">

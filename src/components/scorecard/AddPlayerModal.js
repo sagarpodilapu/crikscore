@@ -5,7 +5,7 @@ import "react-bootstrap-typeahead/css/Typeahead.css";
 import "react-bootstrap-typeahead/css/Typeahead-bs4.css";
 import { has, startCase, toLower, find, isEmpty } from "lodash";
 
-class BatsmanModal extends React.Component {
+class AddPlayerModal extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -74,6 +74,7 @@ class BatsmanModal extends React.Component {
                           fours: 0,
                           sixes: 0,
                           sr: 0,
+                          didNotBat: true,
                         },
                       });
                     }
@@ -115,6 +116,7 @@ class BatsmanModal extends React.Component {
                           fours: 0,
                           sixes: 0,
                           sr: 0,
+                          didNotBat: true,
                         },
                       });
                     }
@@ -149,7 +151,6 @@ class BatsmanModal extends React.Component {
                           name: startCase(toLower(selected[0].name)),
                           teamName: bowlingTeam,
                           teamId: bowlingTeamId,
-                          onStrike: true,
                           bowlingOrder: 1,
                           balls: 0,
                           wickets: 0,
@@ -160,7 +161,9 @@ class BatsmanModal extends React.Component {
                           byes: 0,
                           fours: 0,
                           sixes: 0,
-                          eco: 0.0,
+                          eco: 0,
+                          didNotBowl: true,
+                          currentlyBowling: true,
                         },
                       });
                     }
@@ -189,4 +192,4 @@ class BatsmanModal extends React.Component {
   }
 }
 
-export default BatsmanModal;
+export default AddPlayerModal;

@@ -50,7 +50,6 @@ class BowlerModal extends React.Component {
                         name: startCase(toLower(selected[0].name)),
                         teamName: bowlingTeam,
                         teamId: bowlingTeamId,
-                        onStrike: true,
                         bowlingOrder: 2,
                         balls: 0,
                         wickets: 0,
@@ -62,6 +61,8 @@ class BowlerModal extends React.Component {
                         fours: 0,
                         sixes: 0,
                         eco: 0,
+                        didNotBowl: true,
+                        currentlyBowling: true,
                       },
                     });
                   }
