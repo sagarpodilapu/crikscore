@@ -409,21 +409,21 @@ class Console extends Component {
   handleChangeBowler = (e, bowler) => {
     console.log(bowler);
     e.preventDefault();
-    // const { currentInningsBowling, score } = this.props;
-    // const { scoreCollection } = this.state;
-    // var alreadyExists = find(currentInningsBowling, { id: bowler.id });
-    // if (alreadyExists === undefined) {
-    //   //1 - update
-    //   this.props.addBowler({
-    //     ...bowler,
-    //     bowlingOrder: currentInningsBowling.length + 1,
-    //   });
-    // } else {
-    //   this.props.updateScore(
-    //     { ...score, newBowler: alreadyExists },
-    //     scoreCollection
-    //   );
-    // }
+    const { currentInningsBowling, score } = this.props;
+    const { scoreCollection } = this.state;
+    var alreadyExists = find(currentInningsBowling, { id: bowler.id });
+    if (alreadyExists === undefined) {
+      //1 - update
+      this.props.addBowler({
+        ...bowler,
+        bowlingOrder: currentInningsBowling.length + 1,
+      });
+    } else {
+      this.props.updateScore(
+        { ...score, newBowler: alreadyExists },
+        scoreCollection
+      );
+    }
     this.setState((prevState) => ({
       bowlerModalFlag: !prevState.bowlerModalFlag,
     }));
