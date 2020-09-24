@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import LiveMatches from "../matches/LiveMatches";
-
+import { deleteMatch } from "../../store/actions/matches";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { Redirect } from "react-router-dom";
@@ -8,7 +8,7 @@ import { firestoreConnect } from "react-redux-firebase";
 
 class Home extends Component {
   render() {
-    const { matches, auth } = this.props;
+    const { matches, auth, deleteMatch } = this.props;
     return (
       <div className="dashboard container">
         <div className="row">
@@ -22,7 +22,11 @@ class Home extends Component {
                 New Match
               </a>
             </h1>
-            <LiveMatches matches={matches} auth={auth} />
+            <LiveMatches
+              matches={matches}
+              auth={auth}
+              deleteMatch={deleteMatch}
+            />
           </div>
         </div>
       </div>
@@ -30,17 +34,23 @@ class Home extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     matches: state.firestore.ordered.matches,
-    auth: state.firebase.auth
+    auth: state.firebase.auth,
   };
 };
 
+const mapDispatchToProps = (dispatch) => {
+  return {
+    deleteMatch: (payload) => dispatch(deleteMatch(payload)),
+  };
+};
 
 export default compose(
- 
-  connect(mapStateToProps),
- 
-  firestoreConnect([{ collection: "matches", limit:3 , orderBy: (["createdAt", "desc"]) }])
+  connect(mapStateToProps, mapDispatchToProps),
+
+  firestoreConnect([
+    { collection: "matches", limit: 3, orderBy: ["createdAt", "desc"] },
+  ])
 )(Home);

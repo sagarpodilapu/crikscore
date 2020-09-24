@@ -21,8 +21,17 @@ class BowlerModal extends React.Component {
     this.props.submitBowler(e, this.state.bowler);
   };
   render() {
-    const { openModal, bowlingSquad, bowlingTeam, bowlingTeamId } = this.props;
+    const {
+      openModal,
+      bowlingSquad,
+      bowlingTeam,
+      bowlingTeamId,
+      currentBowler,
+    } = this.props;
     const { bowler } = this.state;
+    const typeaheadOptions = bowlingSquad
+      ? bowlingSquad.filter((item) => item.id !== currentBowler.id)
+      : [];
     return (
       <Modal isOpen={openModal} className={this.props.className}>
         <ModalHeader>Change Bowler</ModalHeader>
@@ -68,7 +77,7 @@ class BowlerModal extends React.Component {
                   }
                 }}
                 allowNew={true}
-                options={bowlingSquad !== undefined ? bowlingSquad : []}
+                options={typeaheadOptions}
                 filterBy={["name"]}
                 placeholder="Type player name..."
                 newSelectionPrefix="Choose : "

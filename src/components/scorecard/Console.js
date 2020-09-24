@@ -236,8 +236,8 @@ class Console extends Component {
       let bowlerWicket = false;
       let boundary = false;
       let overCompleted = false;
-      let nextBattingOrder = score.nextBattingOrder;
-      let nextBowlingOrder = score.nextBowlingOrder;
+      let currentBattingOrder = score.currentBattingOrder;
+      let currentBowlingOrder = score.currentBowlingOrder;
       localStriker = { ...localStriker, didNotBat: false };
       if (!isEmpty(currentRunJson)) {
         runs = parseInt(currentRunJson.run);
@@ -274,7 +274,7 @@ class Console extends Component {
         bowlerWicket = currentOutJson.bowlerWicket;
         if (out) {
           totalWickets++;
-          nextBattingOrder++;
+          // currentBattingOrder++;
         }
       }
       currentEvent =
@@ -371,7 +371,7 @@ class Console extends Component {
           didNotBowl: false,
         };
         overCompleted = true;
-        nextBowlingOrder++;
+        // currentBowlingOrder++;
       }
       let payload = {
         runs,
@@ -401,8 +401,8 @@ class Console extends Component {
         changeBowler: false,
         endInnings: false,
         finalRuns,
-        nextBattingOrder,
-        nextBowlingOrder,
+        currentBattingOrder,
+        currentBowlingOrder,
       };
       //10 - update
       console.log(payload);
@@ -448,15 +448,22 @@ class Console extends Component {
     const { currentInningsBowling, score } = this.props;
     const { scoreCollection } = this.state;
     var alreadyExists = find(currentInningsBowling, { id: bowler.id });
+    // console.log(alreadyExists);
+    let bowlingOrder = score.currentBowlingOrder;
     if (alreadyExists === undefined) {
       //1 - update
+      bowlingOrder++;
       this.props.addBowler({
         ...bowler,
-        bowlingOrder: score.nextBowlingOrder,
+        bowlingOrder: bowlingOrder,
       });
     } else {
       this.props.updateScore(
-        { ...score, newBowler: alreadyExists },
+        {
+          ...score,
+          newBowler: alreadyExists,
+          currentBowlingOrder: bowlingOrder,
+        },
         scoreCollection
       );
     }
@@ -465,19 +472,26 @@ class Console extends Component {
     }));
   };
   handleChangeBatsman = (e, batsman) => {
+    //change here
     e.preventDefault();
-    const { currentInningsBatting, currentMatch, score } = this.props;
+    const { currentInningsBatting, score } = this.props;
     const { scoreCollection } = this.state;
+    let battingOrder = score.currentBattingOrder;
     var alreadyExists = find(currentInningsBatting, { id: batsman.id });
     if (alreadyExists === undefined) {
       //3 - update
+      battingOrder++;
       this.props.addBatsman({
         ...batsman,
-        battingOrder: score.nextBattingOrder,
+        battingOrder,
       });
     } else {
       this.props.updateScore(
-        { ...score, newBatsman: alreadyExists },
+        {
+          ...score,
+          newBatsman: alreadyExists,
+          currentBattingOrder: battingOrder,
+        },
         scoreCollection
       );
     }
@@ -569,7 +583,7 @@ class Console extends Component {
     lastSixBalls.map((ball, i) => (
       <div key={i} className="col-2 text-center p-1">
         <div className="score-label">{ball.over}</div>
-        <div className="ball-values bg-white border border-danger text-uppercase last-six-balls">
+        <div className="ball-values bg-white border border-info text-uppercase last-six-balls">
           {ball.event}
         </div>
       </div>
@@ -606,6 +620,8 @@ class Console extends Component {
       battingSquad,
       auth,
       previousScore,
+      currentInningsBatting,
+      currentInningsBowling,
     } = this.props;
     const {
       bowlerModalFlag,
@@ -889,6 +905,7 @@ class Console extends Component {
                   bowlingTeam={bowlingTeam}
                   bowlingTeamId={bowlingTeamId}
                   toggle={this.toggle}
+                  currentBowler={score && score.bowler}
                 />
                 <OutModal
                   openModal={outModalFlag}
@@ -903,6 +920,7 @@ class Console extends Component {
                   battingSquad={battingSquad}
                   battingTeam={battingTeam}
                   battingTeamId={battingTeamId}
+                  currentInningsBatting={currentInningsBatting}
                 />
                 <ConfirmModal
                   openModal={confirmEndFlag}

@@ -21,8 +21,17 @@ class BatsmanModal extends React.Component {
       battingSquad,
       battingTeam,
       battingTeamId,
+      currentInningsBatting,
     } = this.props;
     const { batsman } = this.state;
+    const currentInningsBattingIds = currentInningsBatting
+      ? currentInningsBatting.map((item) => item.id)
+      : [];
+    const typeaheadOptions = battingSquad
+      ? battingSquad.filter(
+          (item) => currentInningsBattingIds.indexOf(item.id) === -1
+        )
+      : [];
     return (
       <Modal isOpen={openModal} className={this.props.className}>
         <ModalHeader>Change Batsman</ModalHeader>
@@ -73,7 +82,7 @@ class BatsmanModal extends React.Component {
                     }
                   }}
                   allowNew={true}
-                  options={battingSquad !== undefined ? battingSquad : []}
+                  options={typeaheadOptions}
                   filterBy={["name"]}
                   placeholder="Type player name..."
                   newSelectionPrefix="Choose : "

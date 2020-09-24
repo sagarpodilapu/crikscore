@@ -113,6 +113,7 @@ export const createMatch = (match) => {
         secondInningsOvers: 0.0,
         secondInningsWickets: 0,
         tossInformation: tossInformation,
+        resetsRemaining: 5,
         createdAt: new Date(),
       })
       .then(() => {
@@ -138,7 +139,11 @@ export const addBowler = (player) => {
       player = { ...player, id: playerRef.id };
       dispatch(addPlayer(player));
     }
-    let scorePayload = { ...score[0], newBowler: player };
+    let scorePayload = {
+      ...score[0],
+      newBowler: player,
+      currentBowlingOrder: player.bowlingOrder,
+    };
     dispatch(updateScore(scorePayload, scoreCollection));
   };
 };
@@ -158,7 +163,11 @@ export const addBatsman = (player) => {
       player = { ...player, id: playerRef.id };
       dispatch(addPlayer(player));
     }
-    let scorePayload = { ...score[0], newBatsman: player };
+    let scorePayload = {
+      ...score[0],
+      newBatsman: player,
+      currentBattingOrder: player.battingOrder,
+    };
     dispatch(updateScore(scorePayload, scoreCollection));
   };
 };
@@ -222,8 +231,8 @@ export const addPlayers = (striker, nonStriker, bowler) => {
       extraType: "",
       whoIsOut: "",
       nextBallCounted: true,
-      nextBattingOrder: 3,
-      nextBowlingOrder: 2,
+      currentBattingOrder: 2,
+      currentBowlingOrder: 1,
     };
     let matchPayload = {
       ...match,
@@ -408,6 +417,21 @@ export const resetScore = (score, previousScore, whichCollection) => {
       .catch((err) => console.log(err));
   };
 };
+
+export const deleteMatch = (matchId) => {
+  return (dispatch, getState, { getFirebase, getFirestore }) => {
+    const firestore = getFirestore();
+    firestore
+      .collection("matches")
+      .doc(matchId)
+      .delete()
+      .then(() => {
+        console.log("match deleted");
+      })
+      .catch((err) => console.log(err));
+  };
+};
+
 export const getTeamPlayers = (teamId, teamAction) => {
   return (dispatch, getState, { getFirebase, getFirestore }) => {
     const firestore = getFirestore();

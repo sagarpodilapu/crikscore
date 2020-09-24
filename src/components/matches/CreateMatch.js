@@ -150,7 +150,9 @@ class CreateMatch extends Component {
                   />
                 </div>
               </div>
-              <hr className="mb-3 border border-warning" />
+              <hr className="mb-3 border border-danger" />
+              <h3>Team Information</h3>
+              <hr className="mb-3 border border-danger" />
               <div className="form-group row">
                 <label htmlFor="teamOne" className="col-sm-4 col-form-label">
                   Team One

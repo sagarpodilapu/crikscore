@@ -6,9 +6,12 @@ import firebase from "firebase";
 import CopyToClickboard from "../extras/CopyToClickboard";
 import { matchActions, iframeText } from "../../config/match-summary";
 
-const MatchSummary = ({ match, auth, user }) => {
+const MatchSummary = ({ match, auth, user, deleteMatch }) => {
   let url = `/match/${match.id}/score`;
-  const removeMatch = (matchId) => {};
+
+  const removeMatch = (matchId) => {
+    deleteMatch(matchId);
+  };
 
   const enableActions = auth.uid === match.scorerId;
   let matchActionIndex = 0;
