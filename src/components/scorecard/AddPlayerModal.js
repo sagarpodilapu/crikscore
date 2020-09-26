@@ -164,6 +164,7 @@ class AddPlayerModal extends React.Component {
                           eco: 0,
                           didNotBowl: true,
                           currentlyBowling: true,
+                          overs: "0.0",
                         },
                       });
                     }

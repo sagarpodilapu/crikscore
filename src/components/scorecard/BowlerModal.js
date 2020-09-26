@@ -71,6 +71,7 @@ class BowlerModal extends React.Component {
                         sixes: 0,
                         eco: 0,
                         didNotBowl: true,
+                        overs: "0.0",
                         currentlyBowling: true,
                       },
                     });

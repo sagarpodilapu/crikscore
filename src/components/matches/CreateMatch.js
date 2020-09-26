@@ -45,9 +45,28 @@ class CreateMatch extends Component {
       this.props.history.push("/matches");
     }
   };
+
   render() {
     const { teamOne, teamTwo, error, players, overs } = this.state;
     const { auth, teams, tournaments } = this.props;
+
+    const filterSelectedTeamOne = () => {
+      const { teamOneId } = this.state;
+      const { teams } = this.props;
+      if (!teamOneId) return teams;
+      let filteredTeams =
+        teams && teams.filter((item) => item.id !== teamOneId);
+      return filteredTeams;
+    };
+
+    const filterSelectedTeamTwo = () => {
+      const { teamTwoId } = this.state;
+      const { teams } = this.props;
+      if (!teamTwoId) return teams;
+      let filteredTeams =
+        teams && teams.filter((item) => item.id !== teamTwoId);
+      return filteredTeams;
+    };
     if (!auth.uid) {
       return <Redirect to="/signIn" />;
     }
@@ -71,7 +90,6 @@ class CreateMatch extends Component {
                     className="form-control"
                     id="venue"
                     onChange={this.handleChange}
-                    required={true}
                   />
                 </div>
               </div>
@@ -176,7 +194,7 @@ class CreateMatch extends Component {
                       }
                     }}
                     allowNew={true}
-                    options={teams !== undefined ? teams : []}
+                    options={filterSelectedTeamTwo()}
                     filterBy={["name"]}
                     placeholder="Type team name..."
                     newSelectionPrefix="Choose : "
@@ -206,7 +224,7 @@ class CreateMatch extends Component {
                       }
                     }}
                     allowNew={true}
-                    options={teams !== undefined ? teams : []}
+                    options={filterSelectedTeamOne()}
                     filterBy={["name"]}
                     placeholder="Type team name..."
                     newSelectionPrefix="Choose : "

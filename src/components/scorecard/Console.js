@@ -427,12 +427,14 @@ class Console extends Component {
   handleReset = () => {
     const { score, previousScore } = this.props;
     const { scoreCollection } = this.state;
-    console.log(score);
-    console.log(previousScore);
-    this.props.resetScore(score, previousScore, scoreCollection);
-    this.setState({
-      scoreSubmitted: false,
-    });
+    console.log(score.newBatsman);
+    console.log(score.out);
+    // console.log(previousScore.bowler);
+    // console.log(previousScore.newBowler);
+    // this.props.resetScore(score, previousScore, scoreCollection);
+    // this.setState({
+    //   scoreSubmitted: false,
+    // });
   };
   handleStrike = () => {
     const { score } = this.props;
@@ -484,6 +486,8 @@ class Console extends Component {
       this.props.addBatsman({
         ...batsman,
         battingOrder,
+        onStrike: true,
+        didNotBat: false,
       });
     } else {
       this.props.updateScore(

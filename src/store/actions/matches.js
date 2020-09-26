@@ -99,6 +99,7 @@ export const createMatch = (match) => {
     ref
       .set({
         ...match,
+        venue: match.venue ? match.venue : "Local Ground",
         scorerFirstName: profile.firstName,
         scorerLastName: profile.lastName,
         scorerId: scorerId,
@@ -340,11 +341,6 @@ export const addScoreToMatch = (score, whichCollection) => {
             firstInningsOvers: score.currentOver,
             updatedAt: new Date(),
           };
-          dispatch(createFirstInningsStrikerScore(localStriker, match.id));
-          dispatch(
-            createFirstInningsNonStrikerScore(localNonStriker, match.id)
-          );
-          dispatch(createFirstInningsBowlerScore(localBowler, match.id));
         } else {
           finalScore = {
             secondInningsRuns: score.totalRuns,
@@ -352,13 +348,14 @@ export const addScoreToMatch = (score, whichCollection) => {
             secondInningsOvers: score.currentOver,
             updatedAt: new Date(),
           };
-          dispatch(createSecondInningsStrikerScore(localStriker, match.id));
-          dispatch(
-            createSecondInningsNonStrikerScore(localNonStriker, match.id)
-          );
-          dispatch(createSecondInningsBowlerScore(localBowler, match.id));
         }
         dispatch(createInningsScore(finalScore, match.id));
+
+        dispatch(createBatsmanScore(localStriker, match.id, whichCollection));
+        dispatch(
+          createBatsmanScore(localNonStriker, match.id, whichCollection)
+        );
+        dispatch(createBowlerScore(localBowler, match.id, whichCollection));
       })
       .catch((err) => console.log(err));
   };
@@ -369,6 +366,7 @@ export const resetScore = (score, previousScore, whichCollection) => {
     const firestore = getFirestore();
     const currentMatch = getState().firestore.ordered.matches;
     const match = currentMatch[0];
+    console.log(match.resetsRemaining);
     firestore
       .collection("matches")
       .doc(match.id)
@@ -387,32 +385,41 @@ export const resetScore = (score, previousScore, whichCollection) => {
         let localBowler = !isEmpty(previousScore.newBowler)
           ? previousScore.newBowler
           : previousScore.bowler;
+        let updateThisBatsman = score.out
+          ? {
+              ...score.newBatsman,
+              onStrike: false,
+              battingOrder: 0,
+              didNotBat: true,
+            }
+          : false;
         if (whichCollection === "firstInningsScore") {
           finalScore = {
             firstInningsRuns: previousScore.totalRuns,
             firstInningsWickets: previousScore.totalWickets,
             firstInningsOvers: previousScore.currentOver,
             updatedAt: new Date(),
+            resetsRemaining: match.resetsRemaining - 1,
           };
-          dispatch(createFirstInningsStrikerScore(localStriker, match.id));
-          dispatch(
-            createFirstInningsNonStrikerScore(localNonStriker, match.id)
-          );
-          dispatch(createFirstInningsBowlerScore(localBowler, match.id));
         } else {
           finalScore = {
             secondInningsRuns: previousScore.totalRuns,
             secondInningsWickets: previousScore.totalWickets,
             secondInningsOvers: previousScore.currentOver,
+            resetsRemaining: match.resetsRemaining - 1,
             updatedAt: new Date(),
           };
-          dispatch(createSecondInningsStrikerScore(localStriker, match.id));
-          dispatch(
-            createSecondInningsNonStrikerScore(localNonStriker, match.id)
-          );
-          dispatch(createSecondInningsBowlerScore(localBowler, match.id));
         }
         dispatch(createInningsScore(finalScore, match.id));
+        dispatch(createBatsmanScore(localStriker, match.id, whichCollection));
+        dispatch(
+          createBatsmanScore(localNonStriker, match.id, whichCollection)
+        );
+        dispatch(createBowlerScore(localBowler, match.id, whichCollection));
+        if (updateThisBatsman)
+          dispatch(
+            createBatsmanScore(updateThisBatsman, match.id, whichCollection)
+          );
       })
       .catch((err) => console.log(err));
   };
@@ -522,13 +529,13 @@ const createInningsScore = (finalScore, matchId) => {
   };
 };
 
-const createFirstInningsStrikerScore = (striker, matchId) => {
+const createBatsmanScore = (striker, matchId, whichCollection) => {
   return (dispatch, getState, { getFirebase, getFirestore }) => {
     const firestore = getFirestore();
     firestore
       .collection("matches")
       .doc(matchId)
-      .collection("firstInningsBatting")
+      .collection(whichCollection)
       .doc(striker.id)
       .set(striker, { merge: true })
       .then((doc) => {
@@ -538,77 +545,13 @@ const createFirstInningsStrikerScore = (striker, matchId) => {
   };
 };
 
-const createFirstInningsNonStrikerScore = (nonStriker, matchId) => {
+const createBowlerScore = (bowler, matchId, whichCollection) => {
   return (dispatch, getState, { getFirebase, getFirestore }) => {
     const firestore = getFirestore();
     firestore
       .collection("matches")
       .doc(matchId)
-      .collection("firstInningsBatting")
-      .doc(nonStriker.id)
-      .set(nonStriker, { merge: true })
-      .then((doc) => {
-        // console.log(doc);
-      })
-      .catch((err) => console.log(err));
-  };
-};
-
-const createFirstInningsBowlerScore = (bowler, matchId) => {
-  return (dispatch, getState, { getFirebase, getFirestore }) => {
-    const firestore = getFirestore();
-    firestore
-      .collection("matches")
-      .doc(matchId)
-      .collection("firstInningsBowling")
-      .doc(bowler.id)
-      .set(bowler, { merge: true })
-      .then((doc) => {
-        // console.log(doc);
-      })
-      .catch((err) => console.log(err));
-  };
-};
-
-const createSecondInningsStrikerScore = (striker, matchId) => {
-  return (dispatch, getState, { getFirebase, getFirestore }) => {
-    const firestore = getFirestore();
-    firestore
-      .collection("matches")
-      .doc(matchId)
-      .collection("secondInningsBatting")
-      .doc(striker.id)
-      .set(striker, { merge: true })
-      .then((doc) => {
-        // console.log(doc);
-      })
-      .catch((err) => console.log(err));
-  };
-};
-
-const createSecondInningsNonStrikerScore = (nonStriker, matchId) => {
-  return (dispatch, getState, { getFirebase, getFirestore }) => {
-    const firestore = getFirestore();
-    firestore
-      .collection("matches")
-      .doc(matchId)
-      .collection("secondInningsBatting")
-      .doc(nonStriker.id)
-      .set(nonStriker, { merge: true })
-      .then((doc) => {
-        // console.log(doc);
-      })
-      .catch((err) => console.log(err));
-  };
-};
-
-const createSecondInningsBowlerScore = (bowler, matchId) => {
-  return (dispatch, getState, { getFirebase, getFirestore }) => {
-    const firestore = getFirestore();
-    firestore
-      .collection("matches")
-      .doc(matchId)
-      .collection("secondInningsBowling")
+      .collection(whichCollection)
       .doc(bowler.id)
       .set(bowler, { merge: true })
       .then((doc) => {
